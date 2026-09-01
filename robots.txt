@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /impressum.html
+Disallow: /datenschutz.html
+Disallow: /bestellbedingungen.html
+
+Sitemap: https://calimero-hanau.de/sitemap.xml

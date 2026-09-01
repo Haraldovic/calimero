@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Online bestellen | Pizzeria Calimero Hanau</title>
+<meta name="description" content="Pizza, Pasta und Salate der Pizzeria Calimero online zusammenstellen und direkt bestellen. Abholung oder Lieferung in Hanau, Zahlung bei Übergabe.">
+<link rel="canonical" href="https://calimero-hanau.de/bestellen.html">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#c1121c">
+<meta property="og:type" content="restaurant">
+<meta property="og:locale" content="de_DE">
+<meta property="og:site_name" content="Pizzeria Calimero Hanau">
+<meta property="og:title" content="Online bestellen | Pizzeria Calimero Hanau">
+<meta property="og:description" content="Pizza, Pasta und Salate der Pizzeria Calimero online zusammenstellen und direkt bestellen. Abholung oder Lieferung in Hanau, Zahlung bei Übergabe.">
+<meta property="og:url" content="https://calimero-hanau.de/bestellen.html">
+<meta property="og:image" content="https://calimero-hanau.de/assets/img/og-calimero.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="assets/img/favicon-512.png">
+<link rel="apple-touch-icon" href="assets/img/favicon-512.png">
+<link rel="stylesheet" href="assets/css/calimero.css">
+<script>window.CALIMERO_TEL="+4961819529595";window.CALIMERO_TEL_ANZEIGE="06181 95 2 95 95";</script>
+</head>
+<body data-seite="bestellen">
+<a class="sprung" href="#inhalt">Zum Inhalt springen</a>
+
+<header class="kopf">
+  <div class="huelle kopf__innen">
+    <a class="kopf__logo" href="index.html" aria-label="Pizzeria Calimero, zur Startseite">
+      <img src="assets/img/logo-calimero.png" alt="Pizzeria Calimero" width="1085" height="363">
+    </a>
+    <nav class="kopf__nav" aria-label="Hauptmenü">
+      <a href="index.html">Start</a>
+      <a href="speisekarte.html">Speisekarte</a>
+      <a href="bestellen.html" aria-current="page">Bestellen</a>
+      <a href="ueber-uns.html">Über uns</a>
+      <a href="kontakt.html">Kontakt</a>
+    </nav>
+    <a class="kopf__tel" href="tel:+4961819529595"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.2.4 2.4.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg> 06181 95 2 95 95</a>
+  </div>
+</header>
+
+<main id="inhalt">
+
+<section class="best-kopf">
+  <div class="huelle">
+    <h1>Online bestellen</h1>
+    <p>Gerichte auswählen, Warenkorb prüfen, fertig. Die Bestellung geht als
+    Nachricht direkt an unser Telefon, ohne Lieferdienst dazwischen.</p>
+    <ul class="best-ablauf">
+      <li><b>1</b> Auswählen</li>
+      <li><b>2</b> Warenkorb prüfen</li>
+      <li><b>3</b> Per WhatsApp absenden</li>
+      <li><b>4</b> Wir bestätigen die Zeit</li>
+    </ul>
+    <p style="margin-top:1.2rem"><span class="status" data-status
+       style="background:#fff;border-color:var(--riga);color:var(--inchiostro)">
+       <span class="status__punkt"></span><span data-status-text></span></span></p>
+    <p style="font-size:.94rem;color:var(--inchiostro-weich);margin-top:1rem">
+    Bezahlt wird erst bei der Übergabe, bar oder mit EC-Karte im Laden.
+    Es gibt keine Onlinezahlung. Lieferung in Hanau frei Haus ab
+    11,00&nbsp;€.
+    Lieber telefonisch? <a href="tel:+4961819529595">06181 95 2 95 95</a> oder
+    <a href="speisekarte-calimero-2026.pdf" target="_blank" rel="noopener">Speisekarte als PDF</a>.</p>
+    <div class="hinweis" style="border-left-color:var(--rosso)"><p><mark class="todo">Hinweis für den Betreiber, vor dem Livegang entfernen:</mark> Die Getränkepreise sind Platzhalter. Sobald die echten Preise in <code>menu_data.py</code> stehen, dort <code>GETRAENKE_PLATZHALTER = False</code> setzen, dann verschwindet dieser Kasten.</p></div>
+  </div>
+</section>
+
+<div class="best-nav">
+  <div class="huelle best-nav__innen">
+    <div id="kat-tabs" class="karte-nav__gruppe" role="group" aria-label="Kategorie wählen"></div>
+    <div class="suche">
+      <label class="nur-sr" for="artikel-suche">Gericht suchen</label>
+      <input id="artikel-suche" type="search" inputmode="search"
+             placeholder="Nummer oder Name, z. B. 63" autocomplete="off">
+    </div>
+  </div>
+</div>
+
+<section class="abschnitt" style="padding-top:1rem">
+  <div class="huelle">
+    <div id="artikel-liste" class="best-liste">
+      <p class="konfig__hint">Speisekarte wird geladen …</p>
+    </div>
+    <noscript>
+      <div class="hinweis"><p><strong>Für die Bestellfunktion wird JavaScript benötigt.</strong>
+      Sie können uns aber jederzeit anrufen: <a href="tel:+4961819529595">06181 95 2 95 95</a>.
+      Die komplette Karte finden Sie unter
+      <a href="speisekarte.html">Speisekarte</a>.</p></div>
+    </noscript>
+  </div>
+</section>
+
+<button id="korb-leiste" type="button" hidden>
+  <span id="korb-anzahl">0 Artikel</span>
+  <span>Warenkorb ansehen</span>
+  <span id="korb-summe">0,00 €</span>
+</button>
+
+<div class="overlay" id="overlay" hidden>
+  <div class="overlay__panel" id="overlay-panel" role="dialog" aria-modal="true"></div>
+</div>
+</main>
+
+<footer class="fuss">
+  <div class="huelle">
+    <div class="fuss__raster">
+      <div>
+        <p class="fuss__marke"><span>Pizzeria</span><b>„Calimero“</b></p>
+        <p>Pizza, Pasta und Salate. Seit über 20 Jahren am Heumarkt
+        in der Hanauer Innenstadt.</p>
+      </div>
+      <div>
+        <h3>Bestellen</h3>
+        <a class="fuss__tel" href="tel:+4961819529595">06181 95 2 95 95</a>
+        <ul class="fuss__liste">
+          <li>Lieferung in Hanau frei Haus</li>
+          <li>Mindestbestellwert 11&nbsp;€</li>
+          <li>Vor Ort auch Zahlung mit EC-Karte</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Öffnungszeiten</h3>
+        <ul class="zeiten zeiten--stapel">
+        <li data-tag="1"><span class="zeiten__tag">Montag</span><span class="zeiten__zeit">Ruhetag</span></li>
+        <li data-tag="2,3,4,5"><span class="zeiten__tag">Dienstag bis Freitag</span><span class="zeiten__zeit">11:30 – 14:30 &amp; 17:00 – 23:00 Uhr</span></li>
+        <li data-tag="6,0"><span class="zeiten__tag">Samstag, Sonntag, Feiertage</span><span class="zeiten__zeit">15:00 – 23:00 Uhr</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Adresse</h3>
+        <address>
+          Pizzeria Calimero<br>
+          Heumarkt 6<br>
+          63450 Hanau
+        </address>
+        <p><a href="https://www.google.com/maps/search/?api=1&amp;query=Heumarkt+6%2C+63450+Hanau" target="_blank" rel="noopener">Route planen</a></p>
+      </div>
+    </div>
+    <div class="fuss__unten">
+      <span>© 2026 Pizzeria Calimero, Hanau</span>
+      <nav aria-label="Rechtliches">
+        <a href="bestellbedingungen.html">Bestellbedingungen</a>
+        <a href="impressum.html">Impressum</a>
+        <a href="datenschutz.html">Datenschutz</a>
+        <a href="speisekarte-calimero-2026.pdf" target="_blank" rel="noopener">Speisekarte als PDF</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+
+<div class="aktionsleiste">
+  <a class="knopf knopf--dunkel" href="bestellen.html">Jetzt bestellen</a>
+  <a class="knopf knopf--rand" href="tel:+4961819529595"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.2.4 2.4.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg> Anrufen</a>
+</div>
+
+
+<script src="assets/js/calimero.js" defer></script>
+<script src="assets/js/bestellen.js" defer></script>
+</body>
+</html>
