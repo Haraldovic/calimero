@@ -121,6 +121,36 @@
     return { offen: false, text: "Öffnungszeiten siehe unten" };
   }
 
+  /* Fuer die Bestellseite bereitstellen */
+  window.CalimeroZeit = {
+    jetzt: berlinJetzt,
+    zeiten: ZEITEN,
+    status: statusText,
+    hhmm: hhmm,
+    /* Laeuft gerade das Mittagsangebot? Dienstag bis Freitag 11:30 - 14:30 */
+    mittagsangebot: function () {
+      var n = berlinJetzt();
+      return n.tag >= 2 && n.tag <= 5 && n.minute >= 690 && n.minute < 870;
+    },
+    /* Naechste Oeffnung als lesbarer Text, oder null wenn gerade offen */
+    naechsteOeffnung: function () {
+      var n = berlinJetzt(), heute = ZEITEN[n.tag] || [], i;
+      for (i = 0; i < heute.length; i++) {
+        if (n.minute >= heute[i][0] && n.minute < heute[i][1]) return null;
+      }
+      for (i = 0; i < heute.length; i++) {
+        if (n.minute < heute[i][0]) return "heute ab " + hhmm(heute[i][0]) + " Uhr";
+      }
+      for (var k = 1; k <= 7; k++) {
+        var t = (n.tag + k) % 7, z = ZEITEN[t] || [];
+        if (z.length) {
+          return (k === 1 ? "morgen" : "am " + TAGE[t]) + " ab " + hhmm(z[0][0]) + " Uhr";
+        }
+      }
+      return null;
+    }
+  };
+
   function statusZeichnen() {
     var s = statusText();
     document.querySelectorAll("[data-status]").forEach(function (el) {
@@ -225,6 +255,29 @@
       });
     });
   }
+
+  /* ------------------------------------------------------------------
+     Hinweis zur Datenspeicherung.
+     Bewusst kein Zustimmungsdialog: es gibt nichts zuzustimmen, weil keine
+     Cookies gesetzt und keine Drittanbieter geladen werden. Es ist ein
+     Hinweis, den man einmal wegklickt.
+  ------------------------------------------------------------------ */
+  (function () {
+    var kasten = document.getElementById("hinweis-speicher");
+    if (!kasten) return;
+    var SCHL = "calimero-hinweis-gelesen";
+    var gelesen = null;
+    try { gelesen = localStorage.getItem(SCHL); } catch (e) { gelesen = "ja"; }
+    if (!gelesen) {
+      setTimeout(function () { kasten.hidden = false; }, 700);
+    }
+    kasten.querySelectorAll("[data-hinweis-ok]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        kasten.hidden = true;
+        try { localStorage.setItem(SCHL, "ja"); } catch (e) {}
+      });
+    });
+  })();
 
   /* Widerruf, z. B. aus der Datenschutzerklaerung heraus */
   document.querySelectorAll("[data-consent-zuruecksetzen]").forEach(function (b) {

@@ -34,14 +34,24 @@
       .replace(/ü/g, "ue").replace(/ß/g, "ss").replace(/[„“"']/g, "");
   }
 
+  var KORB_HALTBAR = 24 * 60 * 60 * 1000;   /* 24 Stunden */
+
   function korbLaden() {
     try {
       var r = localStorage.getItem(SPEICHER);
-      if (r) korb = JSON.parse(r) || [];
+      if (!r) return;
+      var d = JSON.parse(r);
+      /* Altes Format ohne Zeitstempel: verwerfen */
+      if (!d || !d.stand || !d.posten) { localStorage.removeItem(SPEICHER); return; }
+      if (Date.now() - d.stand > KORB_HALTBAR) { localStorage.removeItem(SPEICHER); return; }
+      korb = d.posten || [];
     } catch (e) { korb = []; }
   }
   function korbSichern() {
-    try { localStorage.setItem(SPEICHER, JSON.stringify(korb)); } catch (e) {}
+    try {
+      if (!korb.length) { localStorage.removeItem(SPEICHER); return; }
+      localStorage.setItem(SPEICHER, JSON.stringify({ stand: Date.now(), posten: korb }));
+    } catch (e) {}
   }
 
   function summe() {
@@ -51,16 +61,54 @@
     return korb.reduce(function (s, p) { return s + p.menge; }, 0);
   }
 
+  /* ---------------------------------------------------- Missbrauchsschutz
+     Bewusst ohne Tageslimit: Das haette gepflegt werden muessen und haette
+     an starken Tagen echte Kunden ausgesperrt. Stattdessen drei Pruefungen,
+     die keine Wartung brauchen und Menschen nie treffen:
+       1. kurze Pause zwischen zwei Bestellungen (gegen Doppelklicks)
+       2. Mindestverweildauer auf der Seite (gegen Skripte)
+       3. Honigtopf-Feld, das nur Automaten ausfuellen
+     Die eigentliche Absicherung bleibt: echte Telefonnummer im Chat und
+     die Bestaetigung durch die Pizzeria, bevor etwas zubereitet wird. */
+  var ZAEHLER = "calimero-letzte-bestellung";
+  var GEOEFFNET_UM = Date.now();
+
+  function bestellsperre() {
+    if (!K.limit) return null;
+    var zuletzt = 0;
+    try { zuletzt = parseInt(localStorage.getItem(ZAEHLER) || "0", 10) || 0; } catch (e) {}
+    var wartet = Math.ceil((K.limit.pause * 1000 - (Date.now() - zuletzt)) / 1000);
+    if (zuletzt && wartet > 0) {
+      return "Sie haben gerade eben schon bestellt. Bitte warten Sie noch " + wartet +
+             " Sekunden, oder rufen Sie uns einfach an.";
+    }
+    if ((Date.now() - GEOEFFNET_UM) / 1000 < (K.limit.verweildauer || 0)) {
+      return "Einen Moment bitte, die Bestellung wird noch vorbereitet.";
+    }
+    var topf = document.getElementById("f-firma");
+    if (topf && topf.value) {
+      return "Diese Bestellung konnte nicht verarbeitet werden. Bitte rufen Sie uns an.";
+    }
+    return null;
+  }
+  function sperreMerken() {
+    try { localStorage.setItem(ZAEHLER, String(Date.now())); } catch (e) {}
+  }
+
   /* ---------------------------------------------------- Startseite Liste */
   var aktiveKat = null;
 
   function tabsZeichnen() {
-    el.tabs.innerHTML = K.kategorien.map(function (k, i) {
-      return '<button type="button" class="kat-tab" data-kat="' + k.id + '"' +
-             (i === 0 ? ' aria-pressed="true"' : ' aria-pressed="false"') + '>' +
-             esc(k.name) + "</button>";
+    /* #pizza, #pasta, #salate oder #getraenke waehlt die Kategorie vor,
+       damit Links aus der Speisekarte direkt an der richtigen Stelle landen. */
+    var ausHash = (location.hash || "").replace("#", "");
+    var start = K.kategorien.filter(function (k) { return k.id === ausHash; })[0];
+    aktiveKat = start ? start.id : K.kategorien[0].id;
+
+    el.tabs.innerHTML = K.kategorien.map(function (k) {
+      return '<button type="button" class="kat-tab" data-kat="' + k.id + '" aria-pressed="' +
+             (k.id === aktiveKat ? "true" : "false") + '">' + esc(k.name) + "</button>";
     }).join("");
-    aktiveKat = K.kategorien[0].id;
     el.tabs.addEventListener("click", function (e) {
       var b = e.target.closest(".kat-tab");
       if (!b) return;
@@ -92,10 +140,15 @@
       var preise = Object.keys(a.preise).map(function (g) { return a.preise[g]; });
       var ab = Math.min.apply(null, preise);
       var mehrere = preise.length > 1;
+      var bild = a.bild
+        ? '<span class="best-artikel__bild"><img src="' + esc(a.bild) + '" alt="" ' +
+          'loading="lazy" width="58" height="58"></span>'
+        : "";
       return '<button type="button" class="best-artikel" data-id="' + a.id + '">' +
-        '<span class="best-artikel__nr">' + esc(a.nr) + "</span>" +
+        bild +
         '<span class="best-artikel__mitte">' +
-          '<span class="best-artikel__name">' + esc(a.name) + "</span>" +
+          '<span class="best-artikel__name"><i class="best-artikel__nr">' + esc(a.nr) +
+          "</i>" + esc(a.name) + "</span>" +
           (a.desc ? '<span class="best-artikel__desc">' + esc(a.desc) + "</span>" : "") +
         "</span>" +
         '<span class="best-artikel__preis">' + (mehrere ? "ab " : "") + eur(ab) + "</span>" +
@@ -110,6 +163,7 @@
     zuletztFokus = document.activeElement;
     el.panel.innerHTML = html;
     el.overlay.hidden = false;
+    document.body.setAttribute("data-overlay", "auf");
     document.body.style.overflow = "hidden";
     var f = el.panel.querySelector("input, button, select, textarea");
     if (f) f.focus();
@@ -118,6 +172,7 @@
   function overlayZu() {
     el.overlay.hidden = true;
     el.panel.innerHTML = "";
+    document.body.removeAttribute("data-overlay");
     document.body.style.overflow = "";
     entwurf = null;
     if (zuletztFokus && zuletztFokus.focus) zuletztFokus.focus();
@@ -126,7 +181,17 @@
     if (e.target === el.overlay || e.target.closest("[data-zu]")) overlayZu();
   });
   document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape" && !el.overlay.hidden) overlayZu();
+    if (el.overlay.hidden) return;
+    if (e.key === "Escape") { overlayZu(); return; }
+    if (e.key !== "Tab") return;
+    /* Tastaturfokus im Fenster halten, sonst landet man hinter dem Overlay */
+    var ziele = el.panel.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), ' +
+      "textarea:not([disabled]), [tabindex]:not([tabindex='-1'])");
+    if (!ziele.length) return;
+    var erste = ziele[0], letzte = ziele[ziele.length - 1];
+    if (e.shiftKey && document.activeElement === erste) { e.preventDefault(); letzte.focus(); }
+    else if (!e.shiftKey && document.activeElement === letzte) { e.preventDefault(); erste.focus(); }
   });
 
   /* ---------------------------------------------------- Artikel konfigurieren */
@@ -143,6 +208,10 @@
 
     var html = '<div class="konfig">';
     html += '<button class="overlay__zu" type="button" data-zu aria-label="Schließen">×</button>';
+    if (a.bild) {
+      html += '<div class="konfig__bild"><img src="' + esc(a.bild) + '" alt="' +
+              esc(a.name) + '"></div>';
+    }
     html += "<h2>" + esc(a.nr) + " " + esc(a.name) + "</h2>";
     if (a.desc) html += '<p class="konfig__desc">' + esc(a.desc) + "</p>";
     if (a.codes) html += '<p class="konfig__codes">Zusatzstoffe / Allergene: ' + esc(a.codes) +
@@ -353,6 +422,25 @@
     html += '<button class="overlay__zu" type="button" data-zu aria-label="Schließen">×</button>';
     html += "<h2>Bestellung abschließen</h2>";
 
+    var Z = window.CalimeroZeit;
+    if (Z) {
+      var spaeter = Z.naechsteOeffnung();
+      if (spaeter) {
+        html += '<div class="hinweis hinweis--warnung"><p><strong>Wir haben gerade ' +
+          "geschlossen.</strong> Sie können Ihre Bestellung trotzdem abschicken, wir " +
+          "bearbeiten sie dann " + esc(spaeter) + ". Eine Bestätigung erhalten Sie " +
+          "erst, wenn wir wieder da sind.</p></div>";
+      }
+      if (Z.mittagsangebot()) {
+        html += '<div class="hinweis"><p><strong>Mittagsangebot läuft gerade.</strong> ' +
+          "Pizza, Nudeln oder Salat in normaler Größe für 7,50 € gibt es bis 14:30 Uhr " +
+          "vor Ort und telefonisch, ausgenommen Nr. 6, 30, 38 und 51. Online wird das " +
+          "nicht automatisch verrechnet. Wenn Sie es nutzen möchten, rufen Sie uns " +
+          'kurz an: <a href="tel:' + (window.CALIMERO_TEL || "") + '">' +
+          esc(window.CALIMERO_TEL_ANZEIGE || "") + "</a>.</p></div>";
+      }
+    }
+
     html += '<fieldset class="konfig__block"><legend>Abholung oder Lieferung</legend><div class="wahl">' +
       '<label class="wahl__opt"><input type="radio" name="art" value="abholung" checked>' +
       "<span>Selbst abholen<b>Heumarkt 6</b></span></label>" +
@@ -368,6 +456,9 @@
         '<input id="f-strasse" type="text" autocomplete="street-address"></label>' +
         '<label class="feld"><span>Stadtteil</span><select id="f-gebiet">' + gebiete + "</select></label>" +
       "</div>" +
+      '<div class="honigtopf" aria-hidden="true">' +
+      '<label for="f-firma">Firma, bitte frei lassen</label>' +
+      '<input id="f-firma" name="firma" type="text" tabindex="-1" autocomplete="off"></div>' +
       '<label class="feld"><span>Wunschzeit</span>' +
       '<input id="f-zeit" type="text" placeholder="so schnell wie möglich" maxlength="40"></label>' +
       "</fieldset>";
@@ -446,6 +537,8 @@
     };
 
     var fehler = [];
+    var sperre = bestellsperre();
+    if (sperre) fehler.push(sperre);
     if (d.name.length < 2) fehler.push("Bitte tragen Sie Ihren Namen ein.");
     if (d.tel.replace(/\D/g, "").length < 6) fehler.push("Bitte tragen Sie eine Telefonnummer ein.");
     if (lief && d.strasse.length < 4) fehler.push("Bitte tragen Sie Straße und Hausnummer ein.");
@@ -458,6 +551,7 @@
     }
     f.hidden = true;
 
+    sperreMerken();
     var pin = String(Math.floor(1000 + Math.random() * 9000));
     var gesamt = summe() + (lief ? K.liefergebuehr : 0);
     var text = nachrichtBauen(pin, d, gesamt);
@@ -603,7 +697,8 @@
   fetch("menu.json", { cache: "no-cache" })
     .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
     .then(start)
-    .catch(function () {
+    .catch(function (fehler) {
+      if (window.console) console.error("Calimero:", fehler);
       el.liste.innerHTML = '<p class="kein-treffer" style="display:block">' +
         "Die Speisekarte konnte nicht geladen werden. Bitte rufen Sie uns an: " +
         '<a href="tel:' + (window.CALIMERO_TEL || "") + '">' +

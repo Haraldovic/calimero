@@ -8,7 +8,8 @@ import os, sys, html
 from menu_data import (SALATE, PASTA, PIZZA, EXTRAS, ZUSATZSTOFFE, ALLERGENE,
                        GROESSEN, EXTRA_ZUTATEN, EXTRA_PREIS, ZUSATZOPTIONEN, WEGLASSEN,
                        GETRAENKE, GETRAENKE_PLATZHALTER, MINDESTBESTELLWERT, LIEFERGEBUEHR,
-                       SONDERGROESSEN, ARTIKEL_HINWEIS)
+                       SONDERGROESSEN, ARTIKEL_HINWEIS,
+                       BESTELL_PAUSE, MINDESTVERWEILDAUER, BILDER)
 import json
 
 HIER = os.path.dirname(os.path.abspath(__file__))
@@ -32,6 +33,44 @@ TEL_ZEIG = "06181 95 2 95 95"
 PDF      = "speisekarte-calimero-2026.pdf"
 MAPS     = "https://www.google.com/maps?q=Heumarkt+6,+63450+Hanau&amp;output=embed"
 MAPS_LINK= "https://www.google.com/maps/search/?api=1&amp;query=Heumarkt+6%2C+63450+Hanau"
+
+# ---------------------------------------------------------------- Fotos
+# Sobald echte Fotos vorliegen: Datei nach assets/img/fotos/ legen und den
+# Wert hier von None auf den Dateinamen setzen. Abschnitte ohne Foto werden
+# gar nicht erst ausgegeben, die Seite sieht also nie unfertig aus.
+FOTOS = {
+    "laden":    None,   # z. B. "laden.jpg"   - Aussenansicht oder Gastraum
+    "ofen":     None,   # z. B. "ofen.jpg"    - Ofen, Teig, Kueche
+    "pizza63":  None,   # z. B. "pizza63.jpg" - die Hauspizza Nr. 63
+    "pasta":    None,   # z. B. "pasta.jpg"
+    "salat":    None,   # z. B. "salat.jpg"
+    "team":     None,   # z. B. "team.jpg"
+}
+FOTO_TEXTE = {
+    "laden":   "Heumarkt 6, mitten in der Hanauer Innenstadt",
+    "ofen":    "Jeden Abend in Betrieb",
+    "pizza63": "Nr. 63, die Pizza Calimero",
+    "pasta":   "Frische Pasta aus der Küche",
+    "salat":   "Salate in zwei Größen",
+    "team":    "Das Team der Pizzeria Calimero",
+}
+
+
+def foto(schluessel, klasse="foto--breit", mit_text=True):
+    """Gibt eine Bildkachel aus, oder nichts, wenn kein Foto hinterlegt ist."""
+    datei = FOTOS.get(schluessel)
+    if not datei:
+        return ""
+    text = FOTO_TEXTE.get(schluessel, "")
+    unterschrift = f"<figcaption>{text}</figcaption>" if (mit_text and text) else ""
+    return (f'<figure class="foto {klasse}">'
+            f'<img src="assets/img/fotos/{datei}" alt="{text}" loading="lazy">'
+            f'{unterschrift}</figure>')
+
+
+def hat_fotos(*schluessel):
+    return any(FOTOS.get(k) for k in schluessel)
+
 
 GEBIETE = ["Hanau Innenstadt", "Wolfgang", "Steinheim", "Kesselstadt",
            "Lamboy", "Rosenau", "Dunlop-Gewerbegebiet"]
@@ -72,7 +111,8 @@ def kopf(titel, beschreibung, pfad, extra_head="", schema="", robots=None):
 <meta name="description" content="{esc(beschreibung)}">
 <link rel="canonical" href="{canonical}">
 <meta name="robots" content="{rbt}">
-<meta name="theme-color" content="#c1121c">
+<meta name="theme-color" content="#15100c">
+<meta name="color-scheme" content="dark">
 <meta property="og:type" content="restaurant">
 <meta property="og:locale" content="de_DE">
 <meta property="og:site_name" content="{NAME} Hanau">
@@ -94,7 +134,12 @@ def kopf(titel, beschreibung, pfad, extra_head="", schema="", robots=None):
 <header class="kopf">
   <div class="huelle kopf__innen">
     <a class="kopf__logo" href="index.html" aria-label="{NAME}, zur Startseite">
-      <img src="assets/img/logo-calimero.png" alt="{NAME}" width="1085" height="363">
+      <img class="kopf__kueken" src="assets/img/calimero-kueken.png" alt=""
+           width="350" height="660">
+      <span class="wortmarke">
+        <em>Pizzeria</em>
+        <b>„Calimero“</b>
+      </span>
     </a>
     <nav class="kopf__nav" aria-label="Hauptmenü">
       {navi(pfad)}
@@ -161,7 +206,7 @@ def fuss():
     <div class="fuss__unten">
       <span>© 2026 {NAME}, Hanau</span>
       <nav aria-label="Rechtliches">
-        <a href="bestellbedingungen.html">Bestellbedingungen</a>
+        <a href="bestellbedingungen.html">AGB</a>
         <a href="impressum.html">Impressum</a>
         <a href="datenschutz.html">Datenschutz</a>
         <a href="{PDF}" target="_blank" rel="noopener">Speisekarte als PDF</a>
@@ -169,6 +214,16 @@ def fuss():
     </div>
   </div>
 </footer>
+
+<aside class="consent" id="hinweis-speicher" hidden aria-label="Hinweis zur Datenspeicherung">
+  <h2>Kurz zur Datenspeicherung</h2>
+  <p><strong>Keine Werbe- oder Analyse-Cookies, keine Tracker.</strong> Warenkorb und
+  Kartenauswahl bleiben lokal in Ihrem Browser. Google Maps lädt erst auf Ihren Klick.</p>
+  <div class="consent__tasten">
+    <button class="knopf knopf--tel" type="button" data-hinweis-ok>Verstanden</button>
+    <a class="knopf knopf--rand" href="datenschutz.html">Mehr dazu</a>
+  </div>
+</aside>
 
 <div class="aktionsleiste">
   <a class="knopf knopf--dunkel" href="bestellen.html">Jetzt bestellen</a>
@@ -183,9 +238,16 @@ def fuss():
 
 
 # ---------------------------------------------------------------- Speisekarte
-def gericht_html(g):
+def gericht_html(g, spalte=False):
     nr, name, zutaten, code, p1, p2 = g
+    bild = ""
+    if BILDER.get(nr):
+        bild = (f'  <span class="gericht__bild"><img src="assets/img/gerichte/{BILDER[nr]}"'
+                f' alt="{name}" loading="lazy" width="64" height="64"></span>\n')
+    elif spalte:
+        bild = '  <span class="gericht__bild gericht__bild--leer" aria-hidden="true"></span>\n' 
     zeilen = [f'<li class="gericht" id="nr-{nr}">',
+              bild.rstrip("\n") if bild else None,
               f'  <span class="gericht__nr">{nr}</span>',
               '  <span class="gericht__mitte">',
               f'    <span class="gericht__name">{name}</span>']
@@ -197,21 +259,25 @@ def gericht_html(g):
     preise = f'<span>{p1}&nbsp;€</span>' + (f'<span>{p2}&nbsp;€</span>' if p2 else '')
     zeilen.append(f'  <span class="gericht__preise">{preise}</span>')
     zeilen.append('</li>')
-    return "\n".join(zeilen)
+    return "\n".join(z for z in zeilen if z)
 
 
-def gruppe_html(anker, titel, unterzeile, masse, eintraege, nachsatz=""):
-    items = "\n".join(gericht_html(g) for g in eintraege)
+def gruppe_html(anker, titel, unterzeile, masse, eintraege, nachsatz="", bestell_kat=None):
+    spalte = any(BILDER.get(g[0]) for g in eintraege)
+    items = "\n".join(gericht_html(g, spalte) for g in eintraege)
     unter = f'<p class="gruppe__unter">{unterzeile}</p>' if unterzeile else ""
+    knopf = (f'<a class="gruppe__bestellen" href="bestellen.html#{bestell_kat}">'
+             f'Bestellen</a>') if bestell_kat else ""
     return f"""<section class="gruppe" id="{anker}" data-leer="nein">
   <div class="gruppe__kopf">
     <h2>{titel}</h2>
-    <span class="gruppe__masse">{masse}</span>
+    <span class="gruppe__rechts">{knopf}<span class="gruppe__masse">{masse}</span></span>
   </div>
   {unter}
   <ul class="gerichte">
 {items}
   </ul>
+  <p class="ornament" aria-hidden="true" style="margin-top:1.6rem"><span>&#9670;</span></p>
   {nachsatz}
 </section>"""
 
@@ -220,16 +286,16 @@ def seite_speisekarte():
     masse_np = '<span>Normal</span><span>Groß</span>'
     masse_pizza = '<span>ø&nbsp;26&nbsp;cm</span><span>ø&nbsp;30&nbsp;cm</span>'
 
-    salate = gruppe_html("salate", "Frische Salate", "", masse_np, SALATE, nachsatz=(
+    salate = gruppe_html("salate", "Frische Salate", "", masse_np, SALATE, bestell_kat="salate", nachsatz=(
         '<div class="hinweis"><p>Alle Salate mit Joghurt-Dressing, auf Wunsch auch mit '
         'Essig und Öl. <strong>Extra-Dressing 1,00&nbsp;€.</strong></p></div>'))
 
-    pasta = gruppe_html("pasta", "Pasta", "", masse_np, PASTA, nachsatz=(
+    pasta = gruppe_html("pasta", "Pasta", "", masse_np, PASTA, bestell_kat="pasta", nachsatz=(
         '<div class="hinweis"><p>Alle Nudelgerichte auf Wunsch mit Käse überbacken, '
         '<strong>1,00&nbsp;€</strong>. Mit&nbsp;* gekennzeichnete Tortellini sind mit '
         'Ricotta und Spinat gefüllt.</p></div>'))
 
-    pizza = gruppe_html("pizza", "Pizza", "", masse_pizza, PIZZA, nachsatz=(
+    pizza = gruppe_html("pizza", "Pizza", "", masse_pizza, PIZZA, bestell_kat="pizza", nachsatz=(
         f'<div class="hinweis"><p><strong>Extra-Zutaten:</strong> {EXTRAS}. '
         'Aufpreis 0,50&nbsp;€ bei ø&nbsp;26&nbsp;cm, 1,00&nbsp;€ bei ø&nbsp;30&nbsp;cm.</p></div>'))
 
@@ -252,8 +318,11 @@ def seite_speisekarte():
     <h1>Speisekarte</h1>
     <p style="font-size:1.1rem">Gültig ab Mai 2026. Am Telefon reicht die Nummer,
     zum Beispiel „einmal die 63“. Alle Preise in Euro, inklusive Mehrwertsteuer.</p>
-    <p><a class="knopf knopf--rand" href="{PDF}" target="_blank" rel="noopener">
-    Speisekarte als PDF öffnen</a></p>
+    <p style="display:flex;flex-wrap:wrap;gap:.7rem">
+      <a class="knopf knopf--tel" href="bestellen.html">Online bestellen</a>
+      <a class="knopf knopf--rand" href="{PDF}" target="_blank" rel="noopener">
+      Speisekarte als PDF</a>
+    </p>
   </div>
 </section>
 
@@ -324,6 +393,25 @@ def seite_start():
         for tage, tag, zeit in ZEITEN_TEXT)
     gebiete = "\n        ".join(f"<li>{g}</li>" for g in GEBIETE)
 
+    galerie = ""
+    if hat_fotos("pizza63", "pasta", "salat", "laden", "ofen"):
+        kacheln = "\n      ".join(filter(None, [
+            foto("pizza63", "foto--quadrat"),
+            foto("pasta", "foto--quadrat"),
+            foto("salat", "foto--quadrat"),
+            foto("ofen", "foto--quadrat"),
+        ]))
+        galerie = f"""<section class="abschnitt">
+  <div class="huelle">
+    <div class="abschnitt__kopf">
+      <h2>Aus unserer Küche</h2>
+    </div>
+    <div class="galerie">
+      {kacheln}
+    </div>
+  </div>
+</section>"""
+
     schema = f"""<script type="application/ld+json">
 {{"@context":"https://schema.org","@type":"Restaurant",
 "name":"{NAME}","alternateName":"Calimero Hanau",
@@ -349,7 +437,7 @@ def seite_start():
   <div class="huelle buehne__innen">
     <div>
       <p class="buehne__jahre">Seit über 20 Jahren am Heumarkt</p>
-      <h1>Pizzeria<br>Calimero</h1>
+      <h1>Pizzeria<em>„Calimero“</em></h1>
       <p class="buehne__text">Pizza, Pasta und Salate in der Hanauer Innenstadt.
       Zum Mitnehmen, zum Hinsetzen oder in ganz Hanau frei Haus geliefert.</p>
       <div class="buehne__tasten">
@@ -417,6 +505,8 @@ def seite_start():
   </div>
 </section>
 
+{galerie}
+
 <section class="abschnitt abschnitt--tief">
   <div class="huelle">
     <div class="raster raster--zwei">
@@ -470,6 +560,12 @@ def seite_start():
 
 # ---------------------------------------------------------------- Über uns
 def seite_ueber():
+    bild_laden = foto("laden", "foto--breit")
+    if bild_laden:
+        bild_laden = f'<div style="margin:2.2rem 0">{bild_laden}</div>'
+    bild_team = foto("team", "foto--breit")
+    if bild_team:
+        bild_team = f'<div style="margin:2.2rem 0 0">{bild_team}</div>'
     body = f"""
 <section class="abschnitt">
   <div class="huelle">
@@ -477,6 +573,8 @@ def seite_ueber():
     <p style="font-size:1.15rem;max-width:60ch">Die Pizzeria Calimero gibt es seit über
     20 Jahren am Heumarkt in Hanau. Kleiner Laden, langer Tresen, ein Ofen, der
     den ganzen Abend läuft.</p>
+
+    {bild_laden}
 
     <div class="raster raster--zwei" style="margin-top:2.4rem">
       <div class="block">
@@ -525,6 +623,7 @@ def seite_ueber():
         pünktlich bereit. <a href="tel:{TEL_ROH}">{TEL_ZEIG}</a></p>
       </div>
     </div>
+    {bild_team}
   </div>
 </section>
 """
@@ -916,6 +1015,8 @@ def menu_json():
                 eintrag["groessen"] = SONDERGROESSEN[nr]
             if nr in ARTIKEL_HINWEIS:
                 eintrag["hinweis"] = ARTIKEL_HINWEIS[nr]
+            if BILDER.get(nr):
+                eintrag["bild"] = "assets/img/gerichte/" + BILDER[nr]
             artikel.append(eintrag)
 
     daten = {
@@ -927,6 +1028,7 @@ def menu_json():
         "mindest": MINDESTBESTELLWERT,
         "liefergebuehr": LIEFERGEBUEHR,
         "liefergebiete": GEBIETE,
+        "limit": {"pause": BESTELL_PAUSE, "verweildauer": MINDESTVERWEILDAUER},
     }
     return json.dumps(daten, ensure_ascii=False, separators=(",", ":"))
 
@@ -935,7 +1037,7 @@ def menu_json():
 def seite_bestellen():
     warnung = ""
     if GETRAENKE_PLATZHALTER:
-        warnung = ('<div class="hinweis" style="border-left-color:var(--rosso)">'
+        warnung = ('<div class="hinweis hinweis--intern">'
                    '<p><mark class="todo">Hinweis für den Betreiber, vor dem Livegang '
                    'entfernen:</mark> Die Getränkepreise sind Platzhalter. Sobald die echten '
                    'Preise in <code>menu_data.py</code> stehen, dort '
@@ -1021,7 +1123,8 @@ def seite_bestellbedingungen():
     body = f"""
 <section class="rechtstext">
   <div class="huelle">
-    <h1>Bestellbedingungen</h1>
+    <h1>Allgemeine Geschäftsbedingungen</h1>
+    <p class="marke">für Bestellungen über diese Website</p>
     <p>Diese Bedingungen gelten für Bestellungen, die über das Bestellformular auf
     dieser Website abgegeben werden. Für telefonische Bestellungen gelten sie sinngemäß.</p>
 
@@ -1109,8 +1212,8 @@ def seite_bestellbedingungen():
   </div>
 </section>
 """
-    return (kopf("Bestellbedingungen | Pizzeria Calimero Hanau",
-                 "Bedingungen für Onlinebestellungen bei der Pizzeria Calimero in Hanau.",
+    return (kopf("AGB und Bestellbedingungen | Pizzeria Calimero Hanau",
+                 "Allgemeine Geschäftsbedingungen für Onlinebestellungen bei der Pizzeria Calimero in Hanau.",
                  "bestellbedingungen.html", robots="noindex, follow")
             + body + fuss())
 

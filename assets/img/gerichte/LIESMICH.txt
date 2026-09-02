@@ -1,0 +1,14 @@
+Fotos der einzelnen Gerichte.
+
+1. Datei hier ablegen, z. B. pizza-calimero.jpg
+2. In menu_data.py im Block BILDER die Nummer zuordnen:
+       BILDER = { "063": "pizza-calimero.jpg" }
+3. python3 build.py
+
+Das Bild erscheint dann automatisch an drei Stellen:
+Speisekarte, Bestellliste und im Konfigurator.
+Gerichte ohne Eintrag laufen ohne Bild weiter, das faellt im Layout nicht auf.
+
+Empfohlen: quadratisch, 800 x 800 px, JPG mit etwa 75 Prozent Qualitaet.
+Von schraeg oben fotografiert, moeglichst bei Tageslicht, immer gleicher
+Abstand und gleicher Untergrund. Das wirkt hochwertiger als jedes Filter.

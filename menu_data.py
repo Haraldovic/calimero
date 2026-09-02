@@ -168,3 +168,23 @@ SONDERGROESSEN = {
 ARTIKEL_HINWEIS = {
     "075": "Bitte tragen Sie Ihre 3 Wunschbeilagen unten im Feld Sonderwunsch ein.",
 }
+
+
+# --- Schutz vor Fake- und Doppelbestellungen -------------------------
+# Bewusst ohne Tageslimit und ohne Feiertagsliste, damit nichts gepflegt
+# werden muss und an starken Tagen niemand ausgesperrt wird.
+BESTELL_PAUSE = 90       # Sekunden zwischen zwei Bestellungen, gegen Doppelklicks
+MINDESTVERWEILDAUER = 8  # Sekunden, die zwischen Seitenaufruf und Absenden liegen
+                         # muessen. Menschen brauchen laenger, Skripte nicht.
+
+
+# --- Gerichtefotos ----------------------------------------------------
+# Datei nach assets/img/gerichte/ legen und hier die Nummer zuordnen.
+# Gerichte ohne Eintrag erscheinen einfach ohne Bild, das faellt nicht auf.
+# Empfohlen: quadratisch, 800 x 800 px, JPG mit etwa 75 Prozent.
+BILDER = {
+    # "040": "pizza-margarita.jpg",
+    # "063": "pizza-calimero.jpg",
+    # "013": "spaghetti-bolognese.jpg",
+    # "005": "salat-caprese.jpg",
+}

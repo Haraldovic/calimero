@@ -7,7 +7,8 @@
 <meta name="description" content="Die komplette Speisekarte der Pizzeria Calimero am Heumarkt in Hanau: 75 Gerichte, Pizza ab 7,50 €, Pasta, Salate, mit Preisen und Allergenen. Auch als PDF.">
 <link rel="canonical" href="https://calimero-hanau.de/speisekarte.html">
 <meta name="robots" content="index, follow">
-<meta name="theme-color" content="#c1121c">
+<meta name="theme-color" content="#15100c">
+<meta name="color-scheme" content="dark">
 <meta property="og:type" content="restaurant">
 <meta property="og:locale" content="de_DE">
 <meta property="og:site_name" content="Pizzeria Calimero Hanau">
@@ -37,7 +38,12 @@
 <header class="kopf">
   <div class="huelle kopf__innen">
     <a class="kopf__logo" href="index.html" aria-label="Pizzeria Calimero, zur Startseite">
-      <img src="assets/img/logo-calimero.png" alt="Pizzeria Calimero" width="1085" height="363">
+      <img class="kopf__kueken" src="assets/img/calimero-kueken.png" alt=""
+           width="350" height="660">
+      <span class="wortmarke">
+        <em>Pizzeria</em>
+        <b>„Calimero“</b>
+      </span>
     </a>
     <nav class="kopf__nav" aria-label="Hauptmenü">
       <a href="index.html">Start</a>
@@ -57,8 +63,11 @@
     <h1>Speisekarte</h1>
     <p style="font-size:1.1rem">Gültig ab Mai 2026. Am Telefon reicht die Nummer,
     zum Beispiel „einmal die 63“. Alle Preise in Euro, inklusive Mehrwertsteuer.</p>
-    <p><a class="knopf knopf--rand" href="speisekarte-calimero-2026.pdf" target="_blank" rel="noopener">
-    Speisekarte als PDF öffnen</a></p>
+    <p style="display:flex;flex-wrap:wrap;gap:.7rem">
+      <a class="knopf knopf--tel" href="bestellen.html">Online bestellen</a>
+      <a class="knopf knopf--rand" href="speisekarte-calimero-2026.pdf" target="_blank" rel="noopener">
+      Speisekarte als PDF</a>
+    </p>
   </div>
 </section>
 
@@ -84,7 +93,7 @@
     <section class="gruppe" id="salate" data-leer="nein">
   <div class="gruppe__kopf">
     <h2>Frische Salate</h2>
-    <span class="gruppe__masse"><span>Normal</span><span>Groß</span></span>
+    <span class="gruppe__rechts"><a class="gruppe__bestellen" href="bestellen.html#salate">Bestellen</a><span class="gruppe__masse"><span>Normal</span><span>Groß</span></span></span>
   </div>
   
   <ul class="gerichte">
@@ -174,12 +183,13 @@
   <span class="gericht__preise"><span>9,00&nbsp;€</span><span>10,00&nbsp;€</span></span>
 </li>
   </ul>
+  <p class="ornament" aria-hidden="true" style="margin-top:1.6rem"><span>&#9670;</span></p>
   <div class="hinweis"><p>Alle Salate mit Joghurt-Dressing, auf Wunsch auch mit Essig und Öl. <strong>Extra-Dressing 1,00&nbsp;€.</strong></p></div>
 </section>
     <section class="gruppe" id="pasta" data-leer="nein">
   <div class="gruppe__kopf">
     <h2>Pasta</h2>
-    <span class="gruppe__masse"><span>Normal</span><span>Groß</span></span>
+    <span class="gruppe__rechts"><a class="gruppe__bestellen" href="bestellen.html#pasta">Bestellen</a><span class="gruppe__masse"><span>Normal</span><span>Groß</span></span></span>
   </div>
   
   <ul class="gerichte">
@@ -419,12 +429,13 @@
   <span class="gericht__preise"><span>8,50&nbsp;€</span><span>10,50&nbsp;€</span></span>
 </li>
   </ul>
+  <p class="ornament" aria-hidden="true" style="margin-top:1.6rem"><span>&#9670;</span></p>
   <div class="hinweis"><p>Alle Nudelgerichte auf Wunsch mit Käse überbacken, <strong>1,00&nbsp;€</strong>. Mit&nbsp;* gekennzeichnete Tortellini sind mit Ricotta und Spinat gefüllt.</p></div>
 </section>
     <section class="gruppe" id="pizza" data-leer="nein">
   <div class="gruppe__kopf">
     <h2>Pizza</h2>
-    <span class="gruppe__masse"><span>ø&nbsp;26&nbsp;cm</span><span>ø&nbsp;30&nbsp;cm</span></span>
+    <span class="gruppe__rechts"><a class="gruppe__bestellen" href="bestellen.html#pizza">Bestellen</a><span class="gruppe__masse"><span>ø&nbsp;26&nbsp;cm</span><span>ø&nbsp;30&nbsp;cm</span></span></span>
   </div>
   
   <ul class="gerichte">
@@ -745,6 +756,7 @@
   <span class="gericht__preise"><span>6,00&nbsp;€</span><span>7,50&nbsp;€</span></span>
 </li>
   </ul>
+  <p class="ornament" aria-hidden="true" style="margin-top:1.6rem"><span>&#9670;</span></p>
   <div class="hinweis"><p><strong>Extra-Zutaten:</strong> Knoblauch, Schinken, Peperoniwurst, Artischocken, Sardellen, Thunfisch, Champignons, Spinat, Broccoli, Käse, Zwiebeln, Paprika, Peperoni, Kapern, Oliven, Ei, Hähnchenbrust und mehr. Aufpreis 0,50&nbsp;€ bei ø&nbsp;26&nbsp;cm, 1,00&nbsp;€ bei ø&nbsp;30&nbsp;cm.</p></div>
 </section>
     <p class="kein-treffer">Zu dieser Suche gibt es kein Gericht.
@@ -830,7 +842,7 @@
     <div class="fuss__unten">
       <span>© 2026 Pizzeria Calimero, Hanau</span>
       <nav aria-label="Rechtliches">
-        <a href="bestellbedingungen.html">Bestellbedingungen</a>
+        <a href="bestellbedingungen.html">AGB</a>
         <a href="impressum.html">Impressum</a>
         <a href="datenschutz.html">Datenschutz</a>
         <a href="speisekarte-calimero-2026.pdf" target="_blank" rel="noopener">Speisekarte als PDF</a>
@@ -838,6 +850,16 @@
     </div>
   </div>
 </footer>
+
+<aside class="consent" id="hinweis-speicher" hidden aria-label="Hinweis zur Datenspeicherung">
+  <h2>Kurz zur Datenspeicherung</h2>
+  <p><strong>Keine Werbe- oder Analyse-Cookies, keine Tracker.</strong> Warenkorb und
+  Kartenauswahl bleiben lokal in Ihrem Browser. Google Maps lädt erst auf Ihren Klick.</p>
+  <div class="consent__tasten">
+    <button class="knopf knopf--tel" type="button" data-hinweis-ok>Verstanden</button>
+    <a class="knopf knopf--rand" href="datenschutz.html">Mehr dazu</a>
+  </div>
+</aside>
 
 <div class="aktionsleiste">
   <a class="knopf knopf--dunkel" href="bestellen.html">Jetzt bestellen</a>

@@ -1,0 +1,10 @@
+Hier kommen die echten Fotos rein.
+
+1. Datei hier ablegen, z. B. laden.jpg
+2. In build.py oben im Block FOTOS den Wert von None auf "laden.jpg" setzen
+3. python3 build.py
+
+Abschnitte ohne hinterlegtes Foto werden gar nicht ausgegeben.
+Die Seite sieht also nie unfertig aus, sie wird nur besser, sobald Bilder da sind.
+
+Empfohlen: 1600 px breite Seite, als JPG mit ca. 75 % Qualitaet.
