@@ -89,6 +89,66 @@ def hat_fotos(*schluessel):
     return any(FOTOS.get(k) for k in schluessel)
 
 
+def bewertungsblock():
+    """Gesamtbewertung mit Quelle und Link. Bewusst OHNE strukturierte
+    Daten (AggregateRating): Google erlaubt keine selbst eingetragenen
+    Bewertungen im Markup des eigenen Betriebs."""
+    b = BEWERTUNG
+    if not b.get("schnitt") or not b.get("anzahl"):
+        return ""
+    schnitt = ("%.1f" % float(b["schnitt"])).replace(".", ",")
+    voll = int(float(b["schnitt"]))
+    halb = 1 if float(b["schnitt"]) - voll >= 0.3 else 0
+    sterne = "★" * voll + ("⯪" if halb else "") + "☆" * (5 - voll - halb)
+    stand = f' <span class="bewertung__stand">(Stand: {b["stand"]})</span>' if b.get("stand") else ""
+    tasten = ""
+    if b.get("profil"):
+        tasten += (f'<a class="knopf knopf--linie" href="{b["profil"]}" target="_blank" '
+                   f'rel="noopener">Alle Bewertungen bei Google lesen</a>')
+    if b.get("bewerten"):
+        tasten += (f'<a class="knopf knopf--rand" href="{b["bewerten"]}" target="_blank" '
+                   f'rel="noopener">Bewertung schreiben</a>')
+    return f"""
+<section class="abschnitt abschnitt--tief">
+  <div class="huelle">
+    <div class="bewertung">
+      <div class="bewertung__zahl">
+        <strong>{schnitt}</strong>
+        <span class="bewertung__sterne" aria-hidden="true">{sterne}</span>
+        <span class="bewertung__quelle">von 5 bei Google</span>
+      </div>
+      <div class="bewertung__text">
+        <h2>Was unsere Gäste sagen</h2>
+        <p>{b["anzahl"]} Bewertungen im Google-Unternehmensprofil.{stand}
+        Lesen Sie sie im Original bei Google, dort stehen alle, die guten
+        wie die kritischen.</p>
+        <div class="bewertung__tasten">{tasten}</div>
+      </div>
+    </div>
+  </div>
+</section>
+"""
+
+
+# ---------------------------------------------------------------- Bewertungen
+# Nur die Gesamtbewertung mit Quelle und Link, keine kopierten Texte.
+# Begruendung steht in der README.
+#
+# WICHTIG: Die Zahlen muessen aus dem Google-Unternehmensprofil des Wirts
+# kommen, nicht von Portalen wie Restaurant Guru oder speisekarte.de.
+# Die widersprechen sich und sind veraltet. Falsche Bewertungsangaben sind
+# irrefuehrende Werbung und abmahnbar.
+#
+# Solange SCHNITT oder ANZAHL None ist, wird der Abschnitt gar nicht
+# ausgegeben. Die Seite sieht also nie unfertig aus.
+BEWERTUNG = {
+    "schnitt": None,      # z. B. 4.6   (Punkt, nicht Komma)
+    "anzahl":  None,      # z. B. 412
+    "stand":   None,      # z. B. "September 2026"
+    "profil":  None,      # Link auf das Google-Profil, "Alle Bewertungen"
+    "bewerten": None,     # Link zum Bewertung schreiben, optional
+}
+
 GEBIETE = ["Hanau Innenstadt", "Wolfgang", "Steinheim", "Kesselstadt",
            "Lamboy", "Rosenau", "Dunlop-Gewerbegebiet"]
 
@@ -426,6 +486,8 @@ def seite_start():
                   'alt="Das Calimero-Küken, Maskottchen der Pizzeria" '
                   'width="350" height="660"></div>')
 
+    bewertungen = bewertungsblock()
+
     galerie = ""
     if hat_fotos("pizza63", "pasta", "salat", "laden", "ofen"):
         kacheln = "\n      ".join(filter(None, [
@@ -538,8 +600,9 @@ def seite_start():
 </section>
 
 {galerie}
+{bewertungen}
 
-<section class="abschnitt abschnitt--tief">
+<section class="abschnitt">
   <div class="huelle">
     <div class="raster raster--zwei">
       <div class="block">

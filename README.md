@@ -159,9 +159,9 @@ sonst geht die `.htaccess` beim Upload verloren.
   Außenansicht, drei bis vier Gerichte (Nr. 63, ein Pastateller, ein Salat),
   Ofen und Team. Handyfotos bei Tageslicht reichen. Danach Bildnachweis im
   Impressum ergänzen, KI-Bilder immer kennzeichnen.
-- **Bewertungen.** Die erfundenen Zitate mit Stockfoto-Avataren der alten
-  Seite sind raus und kommen nur zurück, wenn es echte Google-Rezensionen
-  mit dem dort genannten Namen sind.
+- **Bewertungen.** Der Abschnitt „Was unsere Gäste sagen" ist gebaut,
+  erscheint aber erst, wenn in `build.py` im Block `BEWERTUNG` echte Werte
+  stehen. Siehe eigenes Kapitel weiter unten.
 
 
 ---
@@ -293,6 +293,58 @@ Wirt tippt dann nur noch `/30` und die fertige Nachricht steht da.
 
 Falls die Automatik nicht anspringt: prüfen, ob Meta Business Agent
 verknüpft ist. Der deaktiviert die automatischen Nachrichten.
+
+---
+
+## Google-Bewertungen
+
+Der Abschnitt zeigt **nur die Gesamtbewertung** mit Quelle, Datum und Link
+auf das echte Profil. Es werden **keine Bewertungstexte kopiert**. Das ist
+Absicht, nicht Faulheit:
+
+- Der Text einer Rezension gehört dem Verfasser. Werbung auf der eigenen
+  Website ist kein Zitatzweck nach § 51 UrhG, das Zitatrecht greift hier
+  also nicht.
+- Der Name des Verfassers ist ein personenbezogenes Datum.
+- Googles Nutzungsbedingungen beschränken die Weiterverwendung.
+- Ausgewählte Positivzitate ohne die kritischen Stimmen sind zusätzlich
+  angreifbar, weil sie ein geschöntes Bild erzeugen.
+
+Der Vertrauenseffekt bleibt trotzdem: Note, Anzahl und ein Klick zum
+Original.
+
+### Einrichten
+
+In `build.py` im Block `BEWERTUNG`:
+
+```python
+BEWERTUNG = {
+    "schnitt": 4.6,                    # Punkt, nicht Komma
+    "anzahl":  412,
+    "stand":   "September 2026",
+    "profil":  "https://...",          # Link auf das Google-Profil
+    "bewerten": "https://...",         # optional, Bewertung schreiben
+}
+```
+
+Solange `schnitt` oder `anzahl` auf `None` steht, wird der Abschnitt gar
+nicht ausgegeben.
+
+**Die Zahlen müssen aus dem Google-Unternehmensprofil des Wirts kommen.**
+Nicht von Portalen wie Restaurant Guru, speisekarte.de oder Cylex. Bei der
+Recherche kamen dort 233 Bewertungen bei 4,0 Sternen, 235 bei 4,8 und 1078
+bei 4,5 heraus, alles zum selben Betrieb. Falsche Bewertungsangaben sind
+irreführende Werbung und abmahnbar.
+
+`stand` bitte setzen und halbjährlich aktualisieren. Eine Note von vor drei
+Jahren als aktuell darzustellen wäre derselbe Fehler.
+
+### Kein AggregateRating im Markup
+
+Der Abschnitt enthält bewusst **keine strukturierten Daten** für die
+Bewertung. Google erlaubt keine selbst eingetragenen Bewertungen im
+Markup des eigenen Betriebs. Die Sterne im Suchergebnis zieht Google
+ohnehin direkt aus dem Unternehmensprofil.
 
 ---
 
