@@ -5,6 +5,14 @@
 (function () {
   "use strict";
 
+  /* Zur Kontrolle beim Hochladen: in der Browserkonsole steht, welcher
+     Build gerade laeuft. Passt der nicht zum hochgeladenen Stand, liegt
+     eine alte Datei im Cache oder auf dem Server. */
+  if (window.console) {
+    console.log("Calimero-Website, Build " +
+      (document.documentElement.getAttribute("data-build") || "unbekannt"));
+  }
+
   /* ------------------------------------------------------------------
      1) KONFIGURATION  ->  HIER VOR DEM HOCHLADEN ANPASSEN
      ------------------------------------------------------------------
@@ -238,43 +246,42 @@
     b.addEventListener("click", function () { speichern("ja"); karteLaden(); });
   });
 
-  var banner = document.querySelector(".consent"); /* optional, standardmaessig nicht vorhanden */
-  if (gespeichert() === "ja") {
-    karteLaden();
-    if (banner) banner.hidden = true;
-  } else if (banner && gespeichert() === null) {
-    banner.hidden = false;
-  }
-  if (banner) {
-    banner.querySelectorAll("[data-consent]").forEach(function (b) {
-      b.addEventListener("click", function () {
-        var wert = b.getAttribute("data-consent");
-        speichern(wert);
-        banner.hidden = true;
-        if (wert === "ja") karteLaden();
-      });
-    });
-  }
+  /* Die Karteneinwilligung laeuft ausschliesslich ueber die Zwei-Klick-Flaeche
+     an der Karte selbst. Frueher hing hier zusaetzlich ein Banner dran, das
+     den Hinweiskasten auf jeder Seite wieder aufgeklappt hat. */
+  if (gespeichert() === "ja") karteLaden();
 
   /* ------------------------------------------------------------------
      Hinweis zur Datenspeicherung.
-     Bewusst kein Zustimmungsdialog: es gibt nichts zuzustimmen, weil keine
-     Cookies gesetzt und keine Drittanbieter geladen werden. Es ist ein
-     Hinweis, den man einmal wegklickt.
+     Wird einmal gezeigt und dann nie wieder. Gemerkt wird das doppelt:
+     im localStorage und zusaetzlich als Cookie. Grund: In privaten
+     Fenstern und bei strengen Browsereinstellungen schlaegt localStorage
+     fehl, dann poppte der Hinweis bei jedem Seitenwechsel erneut auf.
   ------------------------------------------------------------------ */
   (function () {
     var kasten = document.getElementById("hinweis-speicher");
     if (!kasten) return;
     var SCHL = "calimero-hinweis-gelesen";
-    var gelesen = null;
-    try { gelesen = localStorage.getItem(SCHL); } catch (e) { gelesen = "ja"; }
-    if (!gelesen) {
-      setTimeout(function () { kasten.hidden = false; }, 700);
+
+    function gemerkt() {
+      try { if (localStorage.getItem(SCHL)) return true; } catch (e) {}
+      return document.cookie.indexOf(SCHL + "=ja") > -1;
+    }
+    function merken() {
+      try { localStorage.setItem(SCHL, "ja"); } catch (e) {}
+      try {
+        document.cookie = SCHL + "=ja; path=/; max-age=31536000; SameSite=Lax" +
+          (location.protocol === "https:" ? "; Secure" : "");
+      } catch (e) {}
+    }
+
+    if (!gemerkt()) {
+      setTimeout(function () { kasten.hidden = false; }, 900);
     }
     kasten.querySelectorAll("[data-hinweis-ok]").forEach(function (b) {
       b.addEventListener("click", function () {
         kasten.hidden = true;
-        try { localStorage.setItem(SCHL, "ja"); } catch (e) {}
+        merken();
       });
     });
   })();

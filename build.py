@@ -4,7 +4,7 @@
 Aufruf:  python3 build.py
 Erzeugt alle .html-Dateien neu. Inhalte werden hier gepflegt, nicht im HTML.
 """
-import os, sys, html
+import os, sys, html, hashlib, datetime
 from menu_data import (SALATE, PASTA, PIZZA, EXTRAS, ZUSATZSTOFFE, ALLERGENE,
                        GROESSEN, EXTRA_ZUTATEN, EXTRA_PREIS, ZUSATZOPTIONEN, WEGLASSEN,
                        GETRAENKE, GETRAENKE_PLATZHALTER, MINDESTBESTELLWERT, LIEFERGEBUEHR,
@@ -13,6 +13,21 @@ from menu_data import (SALATE, PASTA, PIZZA, EXTRAS, ZUSATZSTOFFE, ALLERGENE,
 import json
 
 HIER = os.path.dirname(os.path.abspath(__file__))
+
+
+def fingerabdruck(pfad):
+    """Kurzer Hash aus dem Dateiinhalt. Haengt an CSS und JS als ?v=...
+    Damit laedt jeder Browser nach einer Aenderung zwingend die neue Datei
+    und zeigt nie wieder eine alte Version aus dem Cache."""
+    voll = os.path.join(HIER, pfad)
+    try:
+        with open(voll, "rb") as f:
+            return hashlib.sha1(f.read()).hexdigest()[:10]
+    except OSError:
+        return "0"
+
+
+BAUZEIT = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
 
 # ---------------------------------------------------------------- Modus
 #   python3 build.py             -> Live-Version fuer Hostinger (indexierbar)
@@ -39,6 +54,7 @@ MAPS_LINK= "https://www.google.com/maps/search/?api=1&amp;query=Heumarkt+6%2C+63
 # Wert hier von None auf den Dateinamen setzen. Abschnitte ohne Foto werden
 # gar nicht erst ausgegeben, die Seite sieht also nie unfertig aus.
 FOTOS = {
+    "teller":   None,   # z. B. "teller.jpg"  - rundes Bild in der Bühne, quadratisch
     "laden":    None,   # z. B. "laden.jpg"   - Aussenansicht oder Gastraum
     "ofen":     None,   # z. B. "ofen.jpg"    - Ofen, Teig, Kueche
     "pizza63":  None,   # z. B. "pizza63.jpg" - die Hauspizza Nr. 63
@@ -47,6 +63,7 @@ FOTOS = {
     "team":     None,   # z. B. "team.jpg"
 }
 FOTO_TEXTE = {
+    "teller":  "Frisch aus dem Ofen",
     "laden":   "Heumarkt 6, mitten in der Hanauer Innenstadt",
     "ofen":    "Jeden Abend in Betrieb",
     "pizza63": "Nr. 63, die Pizza Calimero",
@@ -100,10 +117,12 @@ def esc(s):
 def kopf(titel, beschreibung, pfad, extra_head="", schema="", robots=None):
     tiefe = ""
     rbt = robots or ROBOTS
+    v_css = fingerabdruck("assets/css/calimero.css")
     bodyattr = ' data-seite="bestellen"' if pfad == "bestellen.html" else ""
     canonical = DOMAIN + "/" + pfad if pfad != "index.html" else DOMAIN + "/"
     return f"""<!DOCTYPE html>
-<html lang="de">
+<!-- Pizzeria Calimero, Stil A Avorio. Build {BAUZEIT}, CSS {v_css} -->
+<html lang="de" data-build="{BAUZEIT}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -111,8 +130,8 @@ def kopf(titel, beschreibung, pfad, extra_head="", schema="", robots=None):
 <meta name="description" content="{esc(beschreibung)}">
 <link rel="canonical" href="{canonical}">
 <meta name="robots" content="{rbt}">
-<meta name="theme-color" content="#15100c">
-<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#14532d">
+<meta name="color-scheme" content="light">
 <meta property="og:type" content="restaurant">
 <meta property="og:locale" content="de_DE">
 <meta property="og:site_name" content="{NAME} Hanau">
@@ -126,7 +145,7 @@ def kopf(titel, beschreibung, pfad, extra_head="", schema="", robots=None):
 <link rel="icon" href="{tiefe}favicon.ico" sizes="any">
 <link rel="icon" type="image/png" href="{tiefe}assets/img/favicon-512.png">
 <link rel="apple-touch-icon" href="{tiefe}assets/img/favicon-512.png">
-<link rel="stylesheet" href="{tiefe}assets/css/calimero.css">
+<link rel="stylesheet" href="{tiefe}assets/css/calimero.css?v={v_css}">
 {extra_head}{schema}</head>
 <body{bodyattr}>
 <a class="sprung" href="#inhalt">Zum Inhalt springen</a>
@@ -163,7 +182,11 @@ def navi(aktiv):
     return "\n      ".join(aus)
 
 
-def fuss():
+def fuss(extra_js=""):
+    v_js = fingerabdruck("assets/js/calimero.js")
+    weitere = ""
+    for pfad in ([extra_js] if extra_js else []):
+        weitere += (f'\n<script src="{pfad}?v={fingerabdruck(pfad)}" defer></script>')
     zeilen = "\n        ".join(
         f'<li data-tag="{tage}"><span class="zeiten__tag">{tag}</span>'
         f'<span class="zeiten__zeit">{zeit}</span></li>'
@@ -231,7 +254,7 @@ def fuss():
 </div>
 
 
-<script src="assets/js/calimero.js" defer></script>
+<script src="assets/js/calimero.js?v={v_js}" defer></script>{weitere}
 </body>
 </html>
 """
@@ -393,6 +416,16 @@ def seite_start():
         for tage, tag, zeit in ZEITEN_TEXT)
     gebiete = "\n        ".join(f"<li>{g}</li>" for g in GEBIETE)
 
+    if FOTOS.get("teller"):
+        teller = ('<figure class="foto teller">'
+                  f'<img src="assets/img/fotos/{FOTOS["teller"]}" '
+                  f'alt="{FOTO_TEXTE.get("teller", "")}"></figure>')
+    else:
+        teller = ('<div class="teller teller--kueken">'
+                  '<img src="assets/img/calimero-kueken.png" '
+                  'alt="Das Calimero-Küken, Maskottchen der Pizzeria" '
+                  'width="350" height="660"></div>')
+
     galerie = ""
     if hat_fotos("pizza63", "pasta", "salat", "laden", "ofen"):
         kacheln = "\n      ".join(filter(None, [
@@ -437,12 +470,12 @@ def seite_start():
   <div class="huelle buehne__innen">
     <div>
       <p class="buehne__jahre">Seit über 20 Jahren am Heumarkt</p>
-      <h1>Pizzeria<em>„Calimero“</em></h1>
-      <p class="buehne__text">Pizza, Pasta und Salate in der Hanauer Innenstadt.
-      Zum Mitnehmen, zum Hinsetzen oder in ganz Hanau frei Haus geliefert.</p>
+      <h1>Pizza, Pasta<em>und Salate.</em></h1>
+      <p class="buehne__text">Aus der Hanauer Innenstadt. Zum Abholen, vor Ort
+      oder in ganz Hanau frei Haus geliefert.</p>
       <div class="buehne__tasten">
-        <a class="knopf knopf--tel" href="bestellen.html">Jetzt online bestellen</a>
-        <a class="knopf knopf--linie" href="tel:{TEL_ROH}">{ICON_TEL} {TEL_ZEIG}</a>
+        <a class="knopf knopf--dunkel" href="bestellen.html">Jetzt online bestellen</a>
+        <a class="knopf knopf--tel" href="tel:{TEL_ROH}">{ICON_TEL} {TEL_ZEIG}</a>
         <a class="knopf knopf--linie" href="speisekarte.html">Speisekarte</a>
       </div>
       <ul class="buehne__fakten">
@@ -451,8 +484,7 @@ def seite_start():
         <li>{STRASSE}, {PLZ_ORT}</li>
       </ul>
     </div>
-    <img class="buehne__kueken" src="assets/img/calimero-kueken.png"
-         alt="Das Calimero-Küken, Maskottchen der Pizzeria" width="350" height="660">
+    {teller}
   </div>
 </section>
 
@@ -1110,10 +1142,8 @@ def seite_bestellen():
                   "Pizza, Pasta und Salate der Pizzeria Calimero online zusammenstellen und "
                   "direkt bestellen. Abholung oder Lieferung in Hanau, Zahlung bei Übergabe.",
                   "bestellen.html", extra_head=extra)
-             + body + fuss())
-    return seite.replace('<script src="assets/js/calimero.js" defer></script>',
-                         '<script src="assets/js/calimero.js" defer></script>\n'
-                         '<script src="assets/js/bestellen.js" defer></script>')
+             + body + fuss(extra_js="assets/js/bestellen.js"))
+    return seite
 
 
 # ---------------------------------------------------------------- Bestellbedingungen

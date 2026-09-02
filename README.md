@@ -166,36 +166,68 @@ sonst geht die `.htaccess` beim Upload verloren.
 
 ---
 
+## Wenn die Seite falsch aussieht
+
+Das häufigste Problem beim Hochladen: **Der Browser zeigt eine alte
+`calimero.css` aus dem Cache.** Dann läuft neues HTML mit altem Stylesheet,
+und die Seite sieht kaputt aus. Typische Symptome: heller statt dunkler
+Hintergrund, unterstrichene Schrift im Kopf, Text ohne Größen.
+
+Dagegen hängt jetzt an jeder CSS- und JS-Datei ein Fingerabdruck aus dem
+Dateiinhalt, zum Beispiel `calimero.css?v=d598e18fec`. Ändert sich die
+Datei, ändert sich der Wert, und jeder Browser lädt zwingend neu.
+
+So prüfst du, welcher Stand läuft:
+
+1. Auf der Seite Rechtsklick → Seitenquelltext anzeigen. In Zeile 2 steht
+   `<!-- Pizzeria Calimero, Design dunkel. Build JJJJ-MM-TT HH:MM ... -->`
+2. Oder Entwicklerkonsole öffnen, dort wird der Build ausgegeben.
+
+Passt der Zeitstempel nicht zu deinem letzten Upload, fehlen Dateien auf
+dem Server. Dann `assets/` komplett neu hochladen, nicht nur die HTML.
+
+Zum harten Neuladen im Browser: Mac `Cmd + Shift + R`, Windows
+`Strg + F5`.
+
+---
+
 ## Design
 
-Dunkel und warm, Ofenlicht und Gold auf Espressobraun. Kein helles
-Standard-Layout mit weißen Kacheln, sondern Flächen, die sich nur durch
-feine Goldlinien voneinander absetzen. Kanten sind bewusst fast eckig
-(3 px), keine Bubble-Optik.
+**Stil A "Avorio".** Elfenbein als Grundton, tiefes Flaschengrün für Marke,
+Überschriften und Bänder, Messinggold für Ziffern und Zierlinien, Rot nur
+als Signalfarbe für die Hauptaktion. Ecken sind fast eckig (2 px), keine
+Bubble-Optik. Über der Fläche liegt ein sehr feines Papierkorn, damit die
+hellen Flächen nicht steril wirken.
 
-Der Kopf trägt keine Logo-Grafik mehr, sondern eine typografische
-Wortmarke plus das Calimero-Küken als Zeichen. Grund: das Originallogo
-hat rote Schrift auf Weiß, die auf dunklem Grund kaum lesbar ist, und die
-Zeile „Pizzeria“ darin ist bei Kopfzeilengröße ohnehin zu klein. Das
-Originallogo bleibt für das Vorschaubild beim Teilen und natürlich für
-Druck und PDF erhalten.
+Der Kopf trägt eine typografische Wortmarke plus das Calimero-Küken als
+Zeichen. Das Originallogo hat rote Schrift und ist bei Kopfzeilengröße
+nicht lesbar, es bleibt für PDF, Druck und das Vorschaubild beim Teilen.
 
-Farben und Abstände stehen alle als CSS-Variablen ganz oben in
+Farben und Abstände stehen als CSS-Variablen ganz oben in
 `assets/css/calimero.css`. Wer die Stimmung ändern will, ändert dort
-`--oro`, `--notte` und `--rosso`, sonst nichts.
+`--gruen`, `--gold`, `--rot` und `--grund`, sonst nichts.
 
-### Eigene Schrift einbauen
+Zum Vergleichen liegt `stilproben.html` bei, dort stehen die drei
+Richtungen A, B und C nebeneinander. Die Datei gehört nicht auf den
+Server, sie ist nur für die Abstimmung mit dem Kunden.
 
-Die Seite läuft auf Systemschriften, damit nichts von fremden Servern
-nachgeladen wird. Das ist DSGVO-sauber, sieht aber generischer aus als
-eine echte Schrift. Wer das ändern will:
+### Schriften: bewusst nur Systemschriften
 
-1. WOFF2-Dateien nach `assets/fonts/` legen
-2. Den `@font-face`-Block ganz oben in `calimero.css` einkommentieren
-3. Den Namen in `--serif` bzw. `--sans` vorne eintragen
+Die Seite verwendet **keine Google Fonts, keine CDN-Schriften und keine
+lizenzpflichtige Schrift.** Gesetzt wird ausschließlich mit dem, was auf
+dem Gerät des Besuchers ohnehin vorhanden ist: eine Serifenschrift für
+Überschriften (Palatino, ersatzweise Georgia) und die Systemschrift des
+Betriebssystems für den Fließtext.
 
-Passt zum Look: **Fraunces** oder **Playfair Display** für Überschriften,
-**Inter** oder **Source Sans 3** für den Text. Alle frei nutzbar.
+Beim Aufruf der Seite geht damit **keine einzige Anfrage an einen fremden
+Server**. Das ist der Grund, warum hier keine Schrift nachgerüstet werden
+sollte. Google Fonts von deren Servern einzubinden ist der bekannteste
+Abmahngrund bei kleinen Websites.
+
+Externe Adressen kommen im Code nur an vier Stellen vor, und keine davon
+lädt beim Seitenaufruf etwas: Google Maps (erst nach Klick), `wa.me`
+(erst nach Klick), sowie reine Textlinks zu den Datenschutzangaben von
+Google und WhatsApp in der Datenschutzerklärung.
 
 ---
 

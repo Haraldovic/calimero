@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stilproben – Pizzeria Calimero</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;background:#111;color:#eee;
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif}
+img{max-width:100%;display:block}
+
+/* ---------- Rahmen der Vergleichsseite ---------- */
+.leiste{position:sticky;top:0;z-index:50;background:#111;border-bottom:1px solid #333;
+  padding:.9rem 1.4rem;display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}
+.leiste b{margin-right:auto;font-size:.95rem;letter-spacing:.02em}
+.leiste a{color:#eee;text-decoration:none;border:1px solid #444;border-radius:4px;
+  padding:.4rem .9rem;font-size:.86rem}
+.leiste a:hover{border-color:#eee}
+.kapitel{padding:2.2rem 1.4rem .6rem;max-width:1180px;margin-inline:auto}
+.kapitel h2{font-size:1.1rem;margin:0 0 .3rem;letter-spacing:.14em;text-transform:uppercase;
+  color:#c9a24a}
+.kapitel p{margin:0;color:#aaa;font-size:.92rem;max-width:70ch;line-height:1.6}
+.rahmen{max-width:1180px;margin:1rem auto 3.5rem;border:1px solid #333;border-radius:6px;
+  overflow:hidden}
+
+/* =======================================================================
+   A  AVORIO   helles Elfenbein, tiefes Grün, Messing
+   ======================================================================= */
+.a{--grund:#faf6ee;--tief:#f2ebdd;--tinte:#1c1a16;--still:#6b6154;
+   --gruen:#14532d;--gold:#a67c1f;--rot:#a8161f;
+   background:var(--grund);color:var(--tinte);
+   font-family:"Segoe UI",system-ui,Arial,sans-serif}
+.a .kopf{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:1.1rem 2.2rem;border-bottom:1px solid rgba(28,26,22,.12);flex-wrap:wrap}
+.a .marke{font-family:Palatino,"Book Antiqua",Georgia,serif;font-size:1.35rem;font-weight:700;
+  color:var(--gruen);letter-spacing:-.01em}
+.a .marke i{display:block;font-style:normal;font-family:inherit;font-size:.6rem;
+  letter-spacing:.28em;text-transform:uppercase;color:var(--gold);font-weight:700}
+.a nav{display:flex;gap:1.6rem;font-size:.95rem}
+.a nav a{color:var(--tinte);text-decoration:none}
+.a .tel{background:var(--gruen);color:#fff;text-decoration:none;font-weight:700;
+  padding:.6rem 1.15rem;border-radius:2px;font-size:.9rem}
+.a .buehne{padding:4.5rem 2.2rem 3.2rem;display:grid;
+  grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:2rem;align-items:center}
+.a .augen{font-size:.72rem;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);
+  font-weight:700;margin:0 0 1.4rem}
+.a h1{font-family:Palatino,"Book Antiqua",Georgia,serif;font-size:clamp(2.6rem,5vw,4.3rem);
+  line-height:1.02;margin:0 0 .5rem;color:var(--gruen);letter-spacing:-.02em}
+.a h1 em{font-style:italic;color:var(--rot)}
+.a .lead{font-size:1.08rem;line-height:1.6;color:var(--still);max-width:34ch;margin:0 0 1.8rem}
+.a .tasten{display:flex;gap:.7rem;flex-wrap:wrap}
+.a .t1{background:var(--rot);color:#fff}
+.a .t2{background:transparent;color:var(--gruen);border:1px solid rgba(20,83,45,.35)}
+.a .t1,.a .t2{padding:.85rem 1.5rem;border-radius:2px;font-weight:700;font-size:.97rem;
+  text-decoration:none}
+.a .teller{aspect-ratio:1;border-radius:50%;background:
+  radial-gradient(circle at 34% 30%,#fff,#efe6d3 62%,#e3d7bf);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 30px 60px -30px rgba(28,26,22,.5)}
+.a .teller img{width:62%}
+.a .band{background:var(--gruen);color:#fff;padding:1.8rem 2.2rem;display:flex;
+  gap:2rem;align-items:center;flex-wrap:wrap}
+.a .band b{font-family:Palatino,Georgia,serif;font-size:3.2rem;color:#e9c66a;line-height:1}
+.a .band p{margin:0;font-size:.98rem;color:rgba(255,255,255,.85);max-width:50ch}
+.a .karte{padding:3rem 2.2rem}
+.a .karte h3{font-family:Palatino,Georgia,serif;font-size:1.9rem;margin:0 0 .2rem;
+  color:var(--gruen)}
+.a .zier{display:flex;align-items:center;gap:.8rem;margin:0 0 1.4rem;color:var(--gold)}
+.a .zier::after{content:"";height:1px;flex:1;background:rgba(166,124,31,.35)}
+.a .z{display:flex;gap:1rem;align-items:baseline;padding:.85rem 0;
+  border-bottom:1px dotted rgba(28,26,22,.22)}
+.a .nr{font-family:Palatino,Georgia,serif;color:var(--gold);font-weight:700;min-width:2.3rem}
+.a .nm{font-family:Palatino,Georgia,serif;font-weight:700;font-size:1.12rem;display:block}
+.a .zu{display:block;color:var(--still);font-size:.9rem}
+.a .pr{margin-left:auto;font-weight:700;white-space:nowrap}
+
+/* =======================================================================
+   B  ESPRESSO   Elfenbein als Basis, dunkle Bänder als Akzent
+   ======================================================================= */
+.b{--grund:#f7f3ec;--dunkel:#241b14;--tinte:#221c17;--still:#6d6155;
+   --rot:#b5121b;--gold:#c69434;
+   background:var(--grund);color:var(--tinte);
+   font-family:"Segoe UI",system-ui,Arial,sans-serif}
+.b .kopf{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:1.05rem 2.2rem;background:var(--dunkel);color:#f7f3ec;flex-wrap:wrap}
+.b .marke{font-family:Palatino,Georgia,serif;font-size:1.3rem;font-weight:700}
+.b .marke i{display:block;font-style:normal;font-size:.58rem;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--gold);font-weight:700}
+.b nav{display:flex;gap:1.5rem;font-size:.94rem}
+.b nav a{color:#e8e0d4;text-decoration:none}
+.b .tel{background:var(--rot);color:#fff;text-decoration:none;font-weight:700;
+  padding:.55rem 1.1rem;border-radius:3px;font-size:.88rem}
+.b .buehne{padding:3.8rem 2.2rem;display:grid;grid-template-columns:1fr auto;gap:2rem;
+  align-items:end;background:
+    linear-gradient(180deg,#fbf8f2,#f2ece1)}
+.b .augen{font-size:.72rem;letter-spacing:.24em;text-transform:uppercase;color:var(--rot);
+  font-weight:700;margin:0 0 1rem}
+.b h1{font-family:Palatino,Georgia,serif;font-size:clamp(2.6rem,5.4vw,4.6rem);line-height:1;
+  margin:0 0 .6rem;letter-spacing:-.022em}
+.b .lead{color:var(--still);font-size:1.06rem;max-width:36ch;margin:0 0 1.7rem;line-height:1.6}
+.b .tasten{display:flex;gap:.7rem;flex-wrap:wrap}
+.b .t1{background:var(--dunkel);color:#fff}
+.b .t2{background:#fff;color:var(--tinte);border:1px solid rgba(34,28,23,.2)}
+.b .t1,.b .t2{padding:.85rem 1.5rem;border-radius:3px;font-weight:700;font-size:.97rem;
+  text-decoration:none}
+.b .kueken{width:170px;filter:drop-shadow(0 16px 22px rgba(34,28,23,.25))}
+.b .band{background:var(--dunkel);color:#f7f3ec;padding:1.9rem 2.2rem;display:flex;
+  gap:2rem;align-items:center;flex-wrap:wrap}
+.b .band b{font-family:Palatino,Georgia,serif;font-size:3.3rem;color:var(--gold);line-height:1}
+.b .band p{margin:0;font-size:.98rem;color:rgba(247,243,236,.82);max-width:50ch}
+.b .karte{padding:3rem 2.2rem}
+.b .karte h3{font-family:Palatino,Georgia,serif;font-size:2rem;margin:0 0 1.2rem;
+  padding-bottom:.5rem;border-bottom:2px solid var(--dunkel)}
+.b .z{display:flex;gap:1rem;align-items:center;padding:.7rem 0;
+  border-bottom:1px solid rgba(34,28,23,.1)}
+.b .bild{width:56px;height:56px;border-radius:3px;flex:none;
+  background:radial-gradient(circle at 35% 32%,#e8bf7a,#c8802f 60%,#a5601f)}
+.b .nr{font-family:Palatino,Georgia,serif;color:var(--rot);font-weight:700;min-width:2.3rem}
+.b .nm{font-family:Palatino,Georgia,serif;font-weight:700;font-size:1.1rem;display:block}
+.b .zu{display:block;color:var(--still);font-size:.89rem}
+.b .pr{margin-left:auto;font-weight:700;white-space:nowrap}
+
+/* =======================================================================
+   C  EDITORIAL   fast weiß, sehr große Typo, ein Akzent
+   ======================================================================= */
+.c{--grund:#fffdf9;--tinte:#131110;--still:#77706a;--rot:#d0021b;
+   background:var(--grund);color:var(--tinte);
+   font-family:"Segoe UI",system-ui,Arial,sans-serif}
+.c .kopf{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:1.3rem 2.4rem;border-bottom:1px solid var(--tinte);flex-wrap:wrap}
+.c .marke{font-weight:800;font-size:1rem;letter-spacing:.16em;text-transform:uppercase}
+.c nav{display:flex;gap:1.7rem;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase}
+.c nav a{color:var(--tinte);text-decoration:none;font-weight:600}
+.c .tel{color:var(--rot);text-decoration:none;font-weight:800;font-size:.9rem;
+  letter-spacing:.04em}
+.c .buehne{padding:4.5rem 2.4rem 2.6rem}
+.c .augen{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;font-weight:700;
+  margin:0 0 2rem;display:flex;gap:1rem;align-items:center}
+.c .augen::after{content:"";height:1px;flex:1;background:var(--tinte);max-width:9rem}
+.c h1{font-family:Palatino,Georgia,serif;font-size:clamp(3rem,9vw,7.5rem);line-height:.92;
+  margin:0 0 1.6rem;letter-spacing:-.038em;max-width:14ch}
+.c h1 span{color:var(--rot)}
+.c .unten{display:flex;justify-content:space-between;gap:2rem;align-items:flex-end;
+  flex-wrap:wrap;border-top:1px solid var(--tinte);padding-top:1.4rem}
+.c .lead{max-width:34ch;color:var(--still);margin:0;font-size:1.02rem;line-height:1.6}
+.c .tasten{display:flex;gap:.6rem;flex-wrap:wrap}
+.c .t1{background:var(--tinte);color:#fff}
+.c .t2{background:transparent;color:var(--tinte);border:1px solid var(--tinte)}
+.c .t1,.c .t2{padding:.85rem 1.6rem;border-radius:0;font-weight:700;font-size:.9rem;
+  text-decoration:none;letter-spacing:.04em}
+.c .band{padding:2.4rem;border-top:1px solid var(--tinte);border-bottom:1px solid var(--tinte);
+  display:flex;gap:2.4rem;align-items:baseline;flex-wrap:wrap}
+.c .band b{font-family:Palatino,Georgia,serif;font-size:4rem;line-height:1;color:var(--rot)}
+.c .band p{margin:0;color:var(--still);max-width:48ch;font-size:.98rem}
+.c .karte{padding:3rem 2.4rem}
+.c .karte h3{font-size:.78rem;letter-spacing:.22em;text-transform:uppercase;margin:0 0 1.4rem;
+  font-weight:800}
+.c .z{display:grid;grid-template-columns:3rem 1fr auto;gap:1.2rem;align-items:baseline;
+  padding:1rem 0;border-top:1px solid rgba(19,17,16,.14)}
+.c .nr{font-weight:800;font-size:.85rem;color:var(--rot)}
+.c .nm{font-family:Palatino,Georgia,serif;font-weight:700;font-size:1.3rem;display:block;
+  letter-spacing:-.015em}
+.c .zu{display:block;color:var(--still);font-size:.9rem;margin-top:.15rem}
+.c .pr{font-weight:800;white-space:nowrap;font-size:1.05rem}
+
+@media (max-width:820px){
+  .a .buehne,.b .buehne{grid-template-columns:1fr}
+  .a .teller{max-width:260px;margin-inline:auto}
+  .b .kueken{width:130px;justify-self:end}
+  .a .kopf nav,.b .kopf nav,.c .kopf nav{display:none}
+  .a .karte,.b .karte,.c .karte,.a .buehne,.b .buehne,.c .buehne{padding-inline:1.3rem}
+  .a .kopf,.b .kopf,.c .kopf,.a .band,.b .band,.c .band{padding-inline:1.3rem}
+}
+</style>
+</head>
+<body>
+
+<div class="leiste">
+  <b>Pizzeria Calimero, drei Designrichtungen</b>
+  <a href="#a">A Avorio</a>
+  <a href="#b">B Espresso</a>
+  <a href="#c">C Editorial</a>
+</div>
+
+<!-- ============================ A ============================ -->
+<div class="kapitel" id="a">
+  <h2>A · Avorio</h2>
+  <p>Hell, ruhig, teuer. Elfenbein als Grundton, tiefes Flaschengrün für Marke und
+  Navigation, Messinggold als Zierfarbe, Rot nur sparsam als Signal. Der Teller in der
+  Bühne wird später ein echtes Foto. Das ist die Richtung, die am ehesten nach gehobenem
+  italienischem Restaurant aussieht und Fotos am besten zur Geltung bringt.</p>
+</div>
+<div class="rahmen">
+<section class="a">
+  <header class="kopf">
+    <div class="marke"><i>Pizzeria</i>„Calimero“</div>
+    <nav><a>Start</a><a>Speisekarte</a><a>Bestellen</a><a>Über uns</a><a>Kontakt</a></nav>
+    <a class="tel">06181 95 2 95 95</a>
+  </header>
+  <div class="buehne">
+    <div>
+      <p class="augen">Seit über 20 Jahren am Heumarkt</p>
+      <h1>Pizza, Pasta<br><em>und Salate.</em></h1>
+      <p class="lead">Aus dem Steinofen, mitten in der Hanauer Innenstadt.
+      Zum Abholen, vor Ort oder in ganz Hanau frei Haus.</p>
+      <div class="tasten">
+        <a class="t1">Jetzt online bestellen</a>
+        <a class="t2">Speisekarte ansehen</a>
+      </div>
+    </div>
+    <div class="teller"><img src="assets/img/calimero-kueken.png" alt=""></div>
+  </div>
+  <div class="band">
+    <b>7,50 €</b>
+    <p><strong>Mittagsangebot, Dienstag bis Freitag.</strong> Von 11:30 bis 14:30 Uhr eine
+    Pizza, ein Nudelgericht oder einen Salat in normaler Größe.</p>
+  </div>
+  <div class="karte">
+    <h3>Pizza</h3>
+    <p class="zier">◆</p>
+    <div class="z"><span class="nr">040</span><span><span class="nm">Pizza Margarita</span>
+      <span class="zu">mit Tomatensauce und Käse</span></span><span class="pr">7,50 €</span></div>
+    <div class="z"><span class="nr">063</span><span><span class="nm">Pizza Calimero</span>
+      <span class="zu">Shrimps, Sardellen, frische Pilze, Zwiebeln, Kapern, Oliven</span></span>
+      <span class="pr">9,50 €</span></div>
+    <div class="z"><span class="nr">051</span><span><span class="nm">Pizza Capriccio</span>
+      <span class="zu">Salami, Schinken, Peperoniwurst, Pilze, Zwiebeln, Paprika, Oliven</span></span>
+      <span class="pr">9,50 €</span></div>
+  </div>
+</section>
+</div>
+
+<!-- ============================ B ============================ -->
+<div class="kapitel" id="b">
+  <h2>B · Espresso</h2>
+  <p>Der Mittelweg. Heller Grundton für die Inhalte, dunkle Bänder für Kopfzeile und
+  Angebot. Wirkt warm und kräftig, ohne dass die ganze Seite dunkel ist. Die braunen
+  Kacheln in der Karte stehen für die Gerichtefotos, die noch kommen.</p>
+</div>
+<div class="rahmen">
+<section class="b">
+  <header class="kopf">
+    <div class="marke"><i>Pizzeria</i>„Calimero“</div>
+    <nav><a>Start</a><a>Speisekarte</a><a>Bestellen</a><a>Über uns</a><a>Kontakt</a></nav>
+    <a class="tel">06181 95 2 95 95</a>
+  </header>
+  <div class="buehne">
+    <div>
+      <p class="augen">Seit über 20 Jahren am Heumarkt</p>
+      <h1>Pizzeria<br>„Calimero“</h1>
+      <p class="lead">Pizza, Pasta und Salate in der Hanauer Innenstadt.
+      In ganz Hanau frei Haus geliefert.</p>
+      <div class="tasten">
+        <a class="t1">Jetzt online bestellen</a>
+        <a class="t2">06181 95 2 95 95</a>
+      </div>
+    </div>
+    <img class="kueken" src="assets/img/calimero-kueken.png" alt="">
+  </div>
+  <div class="band">
+    <b>7,50 €</b>
+    <p><strong>Mittagsangebot, Dienstag bis Freitag.</strong> Von 11:30 bis 14:30 Uhr eine
+    Pizza, ein Nudelgericht oder einen Salat in normaler Größe.</p>
+  </div>
+  <div class="karte">
+    <h3>Pizza</h3>
+    <div class="z"><span class="bild"></span><span class="nr">040</span>
+      <span><span class="nm">Pizza Margarita</span>
+      <span class="zu">mit Tomatensauce und Käse</span></span><span class="pr">7,50 €</span></div>
+    <div class="z"><span class="bild"></span><span class="nr">063</span>
+      <span><span class="nm">Pizza Calimero</span>
+      <span class="zu">Shrimps, Sardellen, frische Pilze, Zwiebeln, Kapern, Oliven</span></span>
+      <span class="pr">9,50 €</span></div>
+    <div class="z"><span class="bild"></span><span class="nr">051</span>
+      <span><span class="nm">Pizza Capriccio</span>
+      <span class="zu">Salami, Schinken, Peperoniwurst, Pilze, Zwiebeln, Paprika</span></span>
+      <span class="pr">9,50 €</span></div>
+  </div>
+</section>
+</div>
+
+<!-- ============================ C ============================ -->
+<div class="kapitel" id="c">
+  <h2>C · Editorial</h2>
+  <p>Fast weiß, sehr große Schrift, dünne schwarze Linien, ein einziges kräftiges Rot.
+  Wirkt modern und selbstbewusst, eher wie eine Marke als wie eine Pizzeria-Website.
+  Braucht am wenigsten Bilder, um zu funktionieren, ist aber am weitesten weg von
+  „gemütliche Nachbarschaftspizzeria“.</p>
+</div>
+<div class="rahmen">
+<section class="c">
+  <header class="kopf">
+    <div class="marke">Calimero · Hanau</div>
+    <nav><a>Start</a><a>Karte</a><a>Bestellen</a><a>Über uns</a><a>Kontakt</a></nav>
+    <a class="tel">06181 95 2 95 95</a>
+  </header>
+  <div class="buehne">
+    <p class="augen">Heumarkt 6 · seit über 20 Jahren</p>
+    <h1>Pizza nach <span>Nummern.</span></h1>
+    <div class="unten">
+      <p class="lead">75 Gerichte, jedes mit seiner Nummer. Wer einmal bei uns bestellt
+      hat, kennt seine auswendig.</p>
+      <div class="tasten">
+        <a class="t1">Jetzt bestellen</a>
+        <a class="t2">Speisekarte</a>
+      </div>
+    </div>
+  </div>
+  <div class="band">
+    <b>7,50 €</b>
+    <p><strong>Mittagsangebot, Dienstag bis Freitag, 11:30 bis 14:30 Uhr.</strong>
+    Eine Pizza, ein Nudelgericht oder einen Salat in normaler Größe.</p>
+  </div>
+  <div class="karte">
+    <h3>Pizza</h3>
+    <div class="z"><span class="nr">040</span><span><span class="nm">Pizza Margarita</span>
+      <span class="zu">mit Tomatensauce und Käse</span></span><span class="pr">7,50 €</span></div>
+    <div class="z"><span class="nr">063</span><span><span class="nm">Pizza Calimero</span>
+      <span class="zu">Shrimps, Sardellen, frische Pilze, Zwiebeln, Kapern, Oliven</span></span>
+      <span class="pr">9,50 €</span></div>
+    <div class="z"><span class="nr">051</span><span><span class="nm">Pizza Capriccio</span>
+      <span class="zu">Salami, Schinken, Peperoniwurst, Pilze, Zwiebeln, Paprika</span></span>
+      <span class="pr">9,50 €</span></div>
+  </div>
+</section>
+</div>
+
+</body>
+</html>
