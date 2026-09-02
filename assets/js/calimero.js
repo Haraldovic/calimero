@@ -30,6 +30,55 @@
                 "Wunschzeit:";
 
   /* ------------------------------------------------------------------
+     Einblenden beim Scrollen. Einmalig, kein Zurueckblenden, damit es
+     beim Hoch- und Runterscrollen nicht flackert. Respektiert die
+     Systemeinstellung "Bewegung reduzieren".
+  ------------------------------------------------------------------ */
+  (function () {
+    var ziele = document.querySelectorAll("[data-reveal]");
+    if (!ziele.length) return;
+    var ruhig = window.matchMedia &&
+                window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (ruhig || !window.IntersectionObserver) {
+      ziele.forEach(function (el) { el.classList.add("sichtbar"); });
+      return;
+    }
+    /* Alles, was beim Laden schon im Bild ist, faehrt sofort gestaffelt ein.
+       Sonst bliebe die Buehne unsichtbar, bis jemand scrollt. */
+    var sofort = [];
+    ziele.forEach(function (el) {
+      if (el.getBoundingClientRect().top < window.innerHeight - 20) sofort.push(el);
+    });
+    sofort.forEach(function (el) {
+      var verzug = parseInt(el.getAttribute("data-reveal") || "0", 10) || 0;
+      setTimeout(function () { el.classList.add("sichtbar"); }, verzug + 60);
+    });
+
+    var beobachter = new IntersectionObserver(function (eintraege) {
+      eintraege.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        var verzug = parseInt(e.target.getAttribute("data-reveal") || "0", 10) || 0;
+        setTimeout(function () { e.target.classList.add("sichtbar"); }, verzug);
+        beobachter.unobserve(e.target);
+      });
+    }, { rootMargin: "0px 0px -12% 0px", threshold: 0.08 });
+    ziele.forEach(function (el) {
+      if (sofort.indexOf(el) === -1) beobachter.observe(el);
+    });
+  })();
+
+  /* Feine Linie unter dem Kopf erst zeigen, wenn gescrollt wurde */
+  (function () {
+    var kopf = document.querySelector(".kopf");
+    if (!kopf) return;
+    function pruefen() {
+      kopf.setAttribute("data-gescrollt", window.scrollY > 12 ? "ja" : "nein");
+    }
+    pruefen();
+    window.addEventListener("scroll", pruefen, { passive: true });
+  })();
+
+  /* ------------------------------------------------------------------
      Kopfhoehe messen und als CSS-Variable bereitstellen.
      Die Navigation bricht auf schmalen Displays um, dadurch aendert sich
      die Hoehe. Klebende Leisten und Sprungmarken richten sich danach.

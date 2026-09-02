@@ -114,6 +114,7 @@ GROESSEN = {
     "salate": [("normal", "Normal"), ("gross", "Groß")],
     "pasta":  [("normal", "Normal"), ("gross", "Groß")],
     "pizza":  [("26", "ø 26 cm"), ("30", "ø 30 cm")],
+    "getraenke": [("liter", "1,0 l Flasche"), ("glas", "0,33 l Glas")],
 }
 
 # --- Extra-Zutaten ----------------------------------------------------
@@ -144,12 +145,18 @@ WEGLASSEN = ["Zwiebeln", "Knoblauch", "Käse", "Oliven", "Peperoni",
 # !!! PLATZHALTERPREISE !!!  Vom Wirt bestaetigen lassen, siehe README.
 # Format: (Nr, Name, Beschreibung, Zusatzstoffe, Preis, None)
 GETRAENKE = [
-    ("G01", "Coca-Cola",     "1,0 l Flasche", "1,2,3", "4,50", None),  # PLATZHALTERPREIS
-    ("G02", "Fanta",         "1,0 l Flasche", "1,2,3", "4,50", None),  # PLATZHALTERPREIS
-    ("G03", "Sprite",        "1,0 l Flasche", "1,2,3", "4,50", None),  # PLATZHALTERPREIS
-    ("G04", "Mineralwasser", "1,0 l Flasche", "",      "4,00", None),  # PLATZHALTERPREIS
+    # Sinalco in zwei Groessen: 1,0-l-Flasche 4,00 / 0,33-l-Glas 3,00
+    ("G01", "Sinalco Cola",       "", "1",   "4,00", "3,00"),
+    ("G02", "Sinalco Cola Zero",  "", "1,8", "4,00", "3,00"),
+    ("G03", "Sinalco Orange",     "", "",    "4,00", "3,00"),
+    ("G04", "Sinalco Cola Mix",   "", "1",   "4,00", "3,00"),
+    # Einzelgroessen
+    ("G05", "Uludağ Gazoz",       "0,5 l Flasche",  "", "2,50", None),
+    ("G06", "Körfez Ayran",       "0,25 l Becher",  "", "2,00", None),
+    ("G07", "Rhönsprudel, mit Kohlensäure",  "0,5 l Flasche", "", "2,50", None),
+    ("G08", "Rhönsprudel, ohne Kohlensäure", "0,5 l Flasche", "", "2,50", None),
 ]
-GETRAENKE_PLATZHALTER = True   # auf False setzen, sobald die Preise stimmen
+GETRAENKE_PLATZHALTER = False  # Preise vom Wirt bestaetigt, September 2026
 
 # --- Bestellablauf -----------------------------------------------------
 MINDESTBESTELLWERT = 11.00     # nur bei Lieferung, laut Karte 2026

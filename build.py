@@ -46,6 +46,12 @@ PLZ_ORT  = "63450 Hanau"
 TEL_ROH  = "+4961819529595"
 TEL_ZEIG = "06181 95 2 95 95"
 PDF      = "speisekarte-calimero-2026.pdf"
+
+# --- Betreiber, uebernommen aus dem bisherigen Impressum -------------
+INHABER   = "Adem Yesiltas"
+STEUERNR  = "2288402446"
+EMAIL     = None          # <-- muss noch geliefert werden, siehe README
+STAND     = "September 2026"
 MAPS     = "https://www.google.com/maps?q=Heumarkt+6,+63450+Hanau&amp;output=embed"
 MAPS_LINK= "https://www.google.com/maps/search/?api=1&amp;query=Heumarkt+6%2C+63450+Hanau"
 
@@ -56,6 +62,7 @@ MAPS_LINK= "https://www.google.com/maps/search/?api=1&amp;query=Heumarkt+6%2C+63
 FOTOS = {
     "teller":   None,   # z. B. "teller.jpg"  - rundes Bild in der Bühne, quadratisch
     "laden":    None,   # z. B. "laden.jpg"   - Aussenansicht oder Gastraum
+    "stadt":    None,   # z. B. "hanau.jpg"   - Hanau, Innenstadt oder Marktplatz
     "ofen":     None,   # z. B. "ofen.jpg"    - Ofen, Teig, Kueche
     "pizza63":  None,   # z. B. "pizza63.jpg" - die Hauspizza Nr. 63
     "pasta":    None,   # z. B. "pasta.jpg"
@@ -65,6 +72,7 @@ FOTOS = {
 FOTO_TEXTE = {
     "teller":  "Frisch aus dem Ofen",
     "laden":   "Heumarkt 6, mitten in der Hanauer Innenstadt",
+    "stadt":   "Hanau, unsere Stadt seit über zwanzig Jahren",
     "ofen":    "Jeden Abend in Betrieb",
     "pizza63": "Nr. 63, die Pizza Calimero",
     "pasta":   "Frische Pasta aus der Küche",
@@ -89,6 +97,24 @@ def hat_fotos(*schluessel):
     return any(FOTOS.get(k) for k in schluessel)
 
 
+def laufband():
+    """Laufendes Band mit den Argumenten, die den Laden ausmachen.
+    Kein Produktkatalog, sondern die Punkte, die eine Bestellung ausloesen."""
+    punkte = [
+        "Seit über 20 Jahren am Heumarkt",
+        "In ganz Hanau frei Haus",
+        "Mittagstisch für 7,50&nbsp;€",
+        "Ohne Lieferdienst, ohne Aufschlag",
+        "Abholen oder liefern lassen",
+        "Vor Ort mit EC-Karte zahlen",
+        "Dienstag bis Sonntag geöffnet",
+    ]
+    satz = "".join(f'<span>{p}</span><em>&#9670;</em>' for p in punkte)
+    return (f'<div class="laufband" aria-hidden="true"><div class="laufband__spur">'
+            f'<div class="laufband__satz">{satz}</div>'
+            f'<div class="laufband__satz">{satz}</div></div></div>')
+
+
 def bewertungsblock():
     """Gesamtbewertung mit Quelle und Link. Bewusst OHNE strukturierte
     Daten (AggregateRating): Google erlaubt keine selbst eingetragenen
@@ -97,9 +123,10 @@ def bewertungsblock():
     if not b.get("schnitt") or not b.get("anzahl"):
         return ""
     schnitt = ("%.1f" % float(b["schnitt"])).replace(".", ",")
-    voll = int(float(b["schnitt"]))
-    halb = 1 if float(b["schnitt"]) - voll >= 0.3 else 0
-    sterne = "★" * voll + ("⯪" if halb else "") + "☆" * (5 - voll - halb)
+    # Sterne exakt anteilig fuellen statt auf halbe Sterne zu runden.
+    anteil = max(0.0, min(100.0, float(b["schnitt"]) / 5 * 100))
+    sterne = (f'<span class="bewertung__leer">★★★★★</span>'
+              f'<span class="bewertung__voll" style="width:{anteil:.1f}%">★★★★★</span>')
     stand = f' <span class="bewertung__stand">(Stand: {b["stand"]})</span>' if b.get("stand") else ""
     tasten = ""
     if b.get("profil"):
@@ -109,22 +136,16 @@ def bewertungsblock():
         tasten += (f'<a class="knopf knopf--rand" href="{b["bewerten"]}" target="_blank" '
                    f'rel="noopener">Bewertung schreiben</a>')
     return f"""
-<section class="abschnitt abschnitt--tief">
-  <div class="huelle">
-    <div class="bewertung">
-      <div class="bewertung__zahl">
-        <strong>{schnitt}</strong>
-        <span class="bewertung__sterne" aria-hidden="true">{sterne}</span>
-        <span class="bewertung__quelle">von 5 bei Google</span>
-      </div>
-      <div class="bewertung__text">
-        <h2>Was unsere Gäste sagen</h2>
-        <p>{b["anzahl"]} Bewertungen im Google-Unternehmensprofil.{stand}
-        Lesen Sie sie im Original bei Google, dort stehen alle, die guten
-        wie die kritischen.</p>
-        <div class="bewertung__tasten">{tasten}</div>
-      </div>
-    </div>
+<section class="bewertung">
+  <div class="huelle bewertung__innen">
+    <p class="bewertung__sterne" role="img"
+       aria-label="{schnitt} von 5 Sternen">{sterne}</p>
+    <p class="bewertung__satz">
+      <strong>{schnitt} von 5</strong> aus {b["anzahl"]} Google-Bewertungen{stand}
+    </p>
+    <p class="bewertung__zusatz">Wir geben hier keine ausgewählten Zitate wieder.
+    Lesen Sie die Bewertungen im Original, die guten wie die kritischen.</p>
+    <div class="bewertung__tasten">{tasten}</div>
   </div>
 </section>
 """
@@ -326,23 +347,28 @@ def gericht_html(g, spalte=False):
     bild = ""
     if BILDER.get(nr):
         bild = (f'  <span class="gericht__bild"><img src="assets/img/gerichte/{BILDER[nr]}"'
-                f' alt="{name}" loading="lazy" width="64" height="64"></span>\n')
+                f' alt="{name}" loading="lazy" width="72" height="72"></span>')
     elif spalte:
-        bild = '  <span class="gericht__bild gericht__bild--leer" aria-hidden="true"></span>\n' 
-    zeilen = [f'<li class="gericht" id="nr-{nr}">',
-              bild.rstrip("\n") if bild else None,
-              f'  <span class="gericht__nr">{nr}</span>',
-              '  <span class="gericht__mitte">',
-              f'    <span class="gericht__name">{name}</span>']
+        bild = '  <span class="gericht__bild gericht__bild--leer" aria-hidden="true"></span>'
+
+    preise = f'<span>{p1}&nbsp;€</span>' + (f'<span>{p2}&nbsp;€</span>' if p2 else '')
+    zeilen = [f'<li class="gericht" id="nr-{nr}">']
+    if bild:
+        zeilen.append(bild)
+    zeilen.append(f'  <span class="gericht__nr">{nr}</span>')
+    zeilen.append('  <span class="gericht__mitte">')
+    zeilen.append('    <span class="gericht__zeile">')
+    zeilen.append(f'      <span class="gericht__name">{name}</span>')
+    zeilen.append('      <span class="gericht__fuehrung" aria-hidden="true"></span>')
+    zeilen.append(f'      <span class="gericht__preise">{preise}</span>')
+    zeilen.append('    </span>')
     if zutaten:
         zeilen.append(f'    <span class="gericht__zutaten">{zutaten}</span>')
     if code:
         zeilen.append(f'    <span class="gericht__code">Zusatzstoffe / Allergene: {code}</span>')
     zeilen.append('  </span>')
-    preise = f'<span>{p1}&nbsp;€</span>' + (f'<span>{p2}&nbsp;€</span>' if p2 else '')
-    zeilen.append(f'  <span class="gericht__preise">{preise}</span>')
     zeilen.append('</li>')
-    return "\n".join(z for z in zeilen if z)
+    return "\n".join(zeilen)
 
 
 def gruppe_html(anker, titel, unterzeile, masse, eintraege, nachsatz="", bestell_kat=None):
@@ -382,6 +408,18 @@ def seite_speisekarte():
         f'<div class="hinweis"><p><strong>Extra-Zutaten:</strong> {EXTRAS}. '
         'Aufpreis 0,50&nbsp;€ bei ø&nbsp;26&nbsp;cm, 1,00&nbsp;€ bei ø&nbsp;30&nbsp;cm.</p></div>'))
 
+    getraenke_link = ('<a href="#getraenke">Getränke</a>'
+                      if not GETRAENKE_PLATZHALTER and GETRAENKE else "")
+    getraenke = ""
+    if not GETRAENKE_PLATZHALTER and GETRAENKE:
+        masse_g = '<span>1,0&nbsp;l</span><span>0,33&nbsp;l</span>'
+        getraenke = gruppe_html("getraenke", "Getränke", "", masse_g, GETRAENKE,
+                                bestell_kat="getraenke", nachsatz=(
+            '<div class="hinweis"><p>Sinalco gibt es als 1,0-Liter-Flasche und im '
+            '0,33-Liter-Glas. Die übrigen Getränke in der angegebenen Größe. '
+            '<strong>Alle Getränkepreise verstehen sich inklusive Pfand.</strong>'
+            '</p></div>'))
+
     zusatz = "\n".join(f'<li><b>{n}</b> {t}</li>' for n, t in ZUSATZSTOFFE)
     allerg = "\n".join(f'<li><b>{n}</b> {t}</li>' for n, t in ALLERGENE)
 
@@ -399,8 +437,8 @@ def seite_speisekarte():
 <section class="abschnitt" style="padding-bottom:1.5rem">
   <div class="huelle">
     <h1>Speisekarte</h1>
-    <p style="font-size:1.1rem">Gültig ab Mai 2026. Am Telefon reicht die Nummer,
-    zum Beispiel „einmal die 63“. Alle Preise in Euro, inklusive Mehrwertsteuer.</p>
+    <p style="font-size:1.1rem">Gültig ab Mai 2026. Alle Preise in Euro,
+    inklusive Mehrwertsteuer.</p>
     <p style="display:flex;flex-wrap:wrap;gap:.7rem">
       <a class="knopf knopf--tel" href="bestellen.html">Online bestellen</a>
       <a class="knopf knopf--rand" href="{PDF}" target="_blank" rel="noopener">
@@ -415,11 +453,12 @@ def seite_speisekarte():
       <a href="#salate">Salate</a>
       <a href="#pasta">Pasta</a>
       <a href="#pizza">Pizza</a>
+      {getraenke_link}
     </div>
     <div class="suche">
       <label class="nur-sr" for="karte-suche">Speisekarte durchsuchen</label>
       <input id="karte-suche" type="search" inputmode="search"
-             placeholder="Nummer oder Name, z. B. 63"
+             placeholder="Gericht suchen, z. B. Salami"
              autocomplete="off">
       <button class="suche__leeren" type="button" aria-label="Suche zurücksetzen">×</button>
     </div>
@@ -431,6 +470,7 @@ def seite_speisekarte():
     {salate}
     {pasta}
     {pizza}
+    {getraenke}
     <p class="kein-treffer">Zu dieser Suche gibt es kein Gericht.
     Rufen Sie uns gerne an: <a href="tel:{TEL_ROH}">{TEL_ZEIG}</a>.</p>
   </div>
@@ -477,16 +517,16 @@ def seite_start():
     gebiete = "\n        ".join(f"<li>{g}</li>" for g in GEBIETE)
 
     if FOTOS.get("teller"):
-        teller = ('<figure class="foto teller">'
-                  f'<img src="assets/img/fotos/{FOTOS["teller"]}" '
-                  f'alt="{FOTO_TEXTE.get("teller", "")}"></figure>')
+        teller = ('<img class="buehne__kueken" '
+                  f'src="assets/img/fotos/{FOTOS["teller"]}" '
+                  f'alt="{FOTO_TEXTE.get("teller", "")}">')
     else:
-        teller = ('<div class="teller teller--kueken">'
-                  '<img src="assets/img/calimero-kueken.png" '
+        teller = ('<img class="buehne__kueken" src="assets/img/calimero-kueken.png" '
                   'alt="Das Calimero-Küken, Maskottchen der Pizzeria" '
-                  'width="350" height="660"></div>')
+                  'width="350" height="660">')
 
     bewertungen = bewertungsblock()
+    band = laufband()
 
     galerie = ""
     if hat_fotos("pizza63", "pasta", "salat", "laden", "ofen"):
@@ -529,61 +569,81 @@ def seite_start():
 
     body = f"""
 <section class="buehne">
+  <div class="buehne__glanz" aria-hidden="true"></div>
   <div class="huelle buehne__innen">
-    <div>
-      <p class="buehne__jahre">Seit über 20 Jahren am Heumarkt</p>
-      <h1>Pizza, Pasta<em>und Salate.</em></h1>
-      <p class="buehne__text">Aus der Hanauer Innenstadt. Zum Abholen, vor Ort
-      oder in ganz Hanau frei Haus geliefert.</p>
-      <div class="buehne__tasten">
-        <a class="knopf knopf--dunkel" href="bestellen.html">Jetzt online bestellen</a>
-        <a class="knopf knopf--tel" href="tel:{TEL_ROH}">{ICON_TEL} {TEL_ZEIG}</a>
-        <a class="knopf knopf--linie" href="speisekarte.html">Speisekarte</a>
-      </div>
-      <ul class="buehne__fakten">
-        <li><span class="status" data-status><span class="status__punkt"></span>
-            <span data-status-text>Öffnungszeiten siehe unten</span></span></li>
-        <li>{STRASSE}, {PLZ_ORT}</li>
-      </ul>
+    <span class="buehne__seite" aria-hidden="true">Heumarkt 6 &middot; Hanau</span>
+    <p class="marke buehne__jahre" data-reveal="0">Seit über zwanzig Jahren am Heumarkt</p>
+    <h1 data-reveal="80">Pizza, Pasta<em>und Salate.</em></h1>
+    <p class="buehne__text" data-reveal="180">Aus der Hanauer Innenstadt. Zum Abholen,
+    vor Ort oder in ganz Hanau frei Haus geliefert.</p>
+    <div class="buehne__tasten" data-reveal="260">
+      <a class="knopf knopf--dunkel" href="bestellen.html"><span>Jetzt bestellen</span></a>
+      <a class="knopf knopf--linie" href="speisekarte.html"><span>Speisekarte</span></a>
     </div>
+    <ul class="buehne__fakten" data-reveal="340">
+      <li><span class="status" data-status><span class="status__punkt"></span>
+          <span data-status-text>Öffnungszeiten siehe unten</span></span></li>
+      <li><a href="tel:{TEL_ROH}" style="text-decoration:none;color:inherit">{TEL_ZEIG}</a></li>
+    </ul>
     {teller}
   </div>
 </section>
 
+{band}
+
+<section class="abschnitt">
+  <div class="huelle">
+    <span class="abschnitt__nr" aria-hidden="true">01</span>
+    <div class="abschnitt__kopf" data-reveal>
+      <p class="marke">Die Hauspizza</p>
+      <h2>Benannt nach dem Küken auf dem Schild.</h2>
+      <p>Eine Pizza trägt bei uns den Namen des Ladens. Sie steht seit Jahren
+      unverändert auf der Karte, und sie ist der Grund, warum viele überhaupt
+      zum ersten Mal bei uns bestellt haben.</p>
+    </div>
+
+    <div class="empfehlung" data-reveal="100">
+      <p class="empfehlung__nr">63</p>
+      <div>
+        <p class="marke" style="margin-bottom:.8rem">Nr. 63 auf der Karte</p>
+        <h3>Pizza Calimero</h3>
+        <p>Unsere Hauspizza, benannt nach dem Küken auf dem Schild. Tomatensauce,
+        Käse, Shrimps, Sardellen, frische Pilze, Zwiebeln, Kapern und Oliven.</p>
+        <p style="font-family:var(--serif);font-size:1.15rem;color:var(--tinte)">
+        9,50&nbsp;€ <span style="color:var(--leise);font-size:.8em">ø&nbsp;26&nbsp;cm</span>
+        &nbsp;&middot;&nbsp; 13,00&nbsp;€
+        <span style="color:var(--leise);font-size:.8em">ø&nbsp;30&nbsp;cm</span></p>
+        <p style="margin-top:1.6rem">
+        <a class="knopf knopf--linie" href="speisekarte.html"><span>Ganze Karte ansehen</span></a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="mittag">
-  <div class="huelle mittag__innen">
+  <div class="huelle">
+    <div class="mittag__block" data-reveal>
+    <p class="marke" style="color:var(--gold-hell)">Dienstag bis Freitag</p>
     <p class="mittag__preis">7,50<span>€</span></p>
-    <div class="mittag__text">
-      <h2>Mittagsangebot, Dienstag bis Freitag</h2>
-      <p>Von <strong>11:30 bis 14:30 Uhr</strong> eine Pizza, ein Nudelgericht oder einen
-      Salat Ihrer Wahl in normaler Größe für 7,50&nbsp;€.
-      Ausgenommen sind die Nummern 6, 30, 38 und 51.</p>
+    <h2>Der Mittagstisch.</h2>
+    <p>Von <strong>11:30 bis 14:30 Uhr</strong> eine Pizza, ein Nudelgericht oder einen
+    Salat Ihrer Wahl in normaler Größe. Ausgenommen sind die Nummern 6, 30, 38 und 51.</p>
     </div>
   </div>
 </section>
 
 <section class="abschnitt">
   <div class="huelle">
-    <div class="abschnitt__kopf">
-      <h2>Bei uns bestellt man nach Nummern</h2>
-      <p>75 Gerichte stehen auf der Karte, jedes hat seine Nummer. Wer schon einmal
-      bei uns bestellt hat, kennt seine auswendig.</p>
+    <span class="abschnitt__nr" aria-hidden="true">02</span>
+    <div class="abschnitt__kopf" data-reveal>
+      <p class="marke">Die Karte</p>
+      <h2>Drei Kapitel, fünfundsiebzig Gerichte.</h2>
     </div>
-    <div class="empfehlung">
-      <p class="empfehlung__nr">63</p>
-      <div>
-        <h3>Pizza Calimero</h3>
-        <p>Unsere Hauspizza, benannt nach dem Küken auf dem Schild: Tomatensauce, Käse,
-        Shrimps, Sardellen, frische Pilze, Zwiebeln, Kapern und Oliven.
-        9,50&nbsp;€ in ø&nbsp;26&nbsp;cm, 13,00&nbsp;€ in ø&nbsp;30&nbsp;cm.</p>
-        <p><a class="knopf knopf--dunkel" href="speisekarte.html">Ganze Speisekarte ansehen</a></p>
-      </div>
-    </div>
-    <div class="raster raster--drei" style="margin-top:1.6rem">
+    <div class="raster raster--drei" data-reveal="100">
       <div class="block">
         <h3>Pizza</h3>
-        <p>37 Sorten von der Margarita für 7,50&nbsp;€ bis zur Familienpizza mit
-        ø&nbsp;40&nbsp;cm. Dazu Calzone, Pizzabrot und Bruschetta.</p>
+        <p>Siebenunddreißig Sorten, von der Margarita für 7,50&nbsp;€ bis zur
+        Familienpizza mit vierzig Zentimetern. Dazu Calzone, Pizzabrot und Bruschetta.</p>
       </div>
       <div class="block">
         <h3>Pasta</h3>
@@ -602,26 +662,29 @@ def seite_start():
 {galerie}
 {bewertungen}
 
-<section class="abschnitt">
+<section class="abschnitt abschnitt--tief">
   <div class="huelle">
     <div class="raster raster--zwei">
-      <div class="block">
-        <h3>Lieferung in Hanau</h3>
-        <p>Innerhalb von Hanau liefern wir frei Haus. Der Mindestbestellwert
-        beträgt 11&nbsp;€.</p>
-        <p><strong>Wir liefern nach:</strong></p>
-        <ul class="gebiete">
+      <div data-reveal>
+        <span class="abschnitt__nr" aria-hidden="true" style="position:static;display:block;
+          font-size:clamp(4rem,9vw,7rem);opacity:.16;margin-bottom:-.25em">03</span>
+        <p class="marke">Lieferung</p>
+        <h2>In Hanau frei Haus.</h2>
+        <p style="color:var(--still)">Innerhalb von Hanau liefern wir ohne Liefergebühr.
+        Der Mindestbestellwert beträgt 11,00&nbsp;€.</p>
+        <ul class="gebiete" style="margin-top:1.4rem">
         {gebiete}
         </ul>
       </div>
-      <div class="block">
-        <h3>Öffnungszeiten</h3>
+      <div data-reveal="120">
+        <p class="marke">Öffnungszeiten</p>
         <ul class="zeiten">
         {zeilen}
         </ul>
-        <p style="margin-top:1rem"><span class="status" data-status
-           style="background:var(--carta-tief);border-color:var(--riga);color:var(--inchiostro)">
-           <span class="status__punkt"></span><span data-status-text></span></span></p>
+        <p style="margin-top:1.4rem">
+          <span class="status" data-status><span class="status__punkt"></span>
+          <span data-status-text></span></span>
+        </p>
       </div>
     </div>
   </div>
@@ -629,18 +692,22 @@ def seite_start():
 
 <section class="abschnitt">
   <div class="huelle">
-    <div class="abschnitt__kopf">
-      <h2>So finden Sie uns</h2>
+    <span class="abschnitt__nr" aria-hidden="true">04</span>
+    <div class="abschnitt__kopf" data-reveal>
+      <p class="marke">Anfahrt</p>
+      <h2>So finden Sie uns.</h2>
       <p>{STRASSE}, {PLZ_ORT}. Mitten in der Innenstadt, wenige Schritte vom Marktplatz.</p>
     </div>
-    <div class="zweiklick" data-karte="{MAPS}">
+    <div class="zweiklick" data-karte="{MAPS}" data-reveal="80">
       <div class="zweiklick__hinweis">
         <p>Die Karte wird erst nach Ihrer Zustimmung von Google geladen. Dabei wird
         Ihre IP-Adresse an Google übertragen.</p>
-        <button class="knopf knopf--dunkel" type="button" data-karte-laden>Karte anzeigen</button>
+        <p style="margin-top:1.2rem">
+        <button class="knopf knopf--linie" type="button" data-karte-laden>
+        <span>Karte anzeigen</span></button></p>
       </div>
     </div>
-    <p style="margin-top:1rem"><a href="{MAPS_LINK}" target="_blank" rel="noopener">
+    <p style="margin-top:1.4rem"><a href="{MAPS_LINK}" target="_blank" rel="noopener">
     Route in Google Maps planen</a></p>
   </div>
 </section>
@@ -656,48 +723,83 @@ def seite_start():
 # ---------------------------------------------------------------- Über uns
 def seite_ueber():
     bild_laden = foto("laden", "foto--breit")
-    if bild_laden:
-        bild_laden = f'<div style="margin:2.2rem 0">{bild_laden}</div>'
+    bild_stadt = foto("stadt", "foto--breit")
     bild_team = foto("team", "foto--breit")
-    if bild_team:
-        bild_team = f'<div style="margin:2.2rem 0 0">{bild_team}</div>'
+
+    laden_block = (f'<div style="margin:2.4rem 0">{bild_laden}</div>' if bild_laden else "")
+    team_block = (f'<div style="margin:2.4rem 0 0">{bild_team}</div>' if bild_team else "")
+    stadt_block = (f'<div style="margin:0 0 2.4rem">{bild_stadt}</div>' if bild_stadt else "")
+
     body = f"""
 <section class="abschnitt">
   <div class="huelle">
-    <h1>Über uns</h1>
-    <p style="font-size:1.15rem;max-width:60ch">Die Pizzeria Calimero gibt es seit über
-    20 Jahren am Heumarkt in Hanau. Kleiner Laden, langer Tresen, ein Ofen, der
-    den ganzen Abend läuft.</p>
+    <p class="marke">Über uns</p>
+    <h1>Seit über zwanzig Jahren<br>am Heumarkt</h1>
+    <p style="font-size:1.14rem;max-width:56ch;color:var(--still)">
+    Ein kleiner Laden mitten in der Hanauer Innenstadt, ein Ofen, der den ganzen
+    Abend läuft, und eine Karte, die sich seit Jahren kaum verändert hat. Weil sie
+    funktioniert.</p>
 
-    {bild_laden}
+    {laden_block}
 
     <div class="raster raster--zwei" style="margin-top:2.4rem">
       <div class="block">
         <h3>Was wir machen</h3>
-        <p>Pizza in zwei Größen und als Familienpizza mit 40&nbsp;cm, dazu Pasta in allen
-        Varianten, Lasagne, Gnocchi und Salate. Die Karte hat 75 Positionen und ändert
-        sich selten, weil unsere Gäste ihre Nummern kennen.</p>
-        <p>Bestellt wird bei uns per Telefon. Zum Abholen, zum Hierbleiben oder zur
-        Lieferung nach Hause, in Hanau frei Haus.</p>
+        <p>Pizza in zwei Größen und als Familienpizza mit vierzig Zentimetern, dazu
+        Pasta in allen Varianten, Lasagne, Gnocchi und Salate. Fünfundsiebzig
+        Gerichte stehen auf der Karte.</p>
+        <p>Bestellt wird bei uns per Telefon oder seit Neuestem online. Zum Abholen,
+        zum Hierbleiben oder zur Lieferung nach Hause, in Hanau frei Haus.</p>
       </div>
       <div class="block">
         <h3>Der Vogel auf dem Schild</h3>
         <p>Calimero ist das schwarze Küken mit der Eierschale auf dem Kopf, das seit
-        Jahrzehnten aus italienischen Werbespots bekannt ist. Er steht auf unserem
-        Schild, auf der Karte, und er hat seine eigene Pizza: die Nummer 63.</p>
+        den sechziger Jahren aus italienischen Werbespots bekannt ist. Klein, frech
+        und immer ein bisschen unterschätzt.</p>
+        <p>Er steht auf unserem Schild, auf der Karte, und er hat seine eigene Pizza:
+        die <a href="speisekarte.html#nr-063">Pizza Calimero</a>.</p>
       </div>
-    </div>
-
-    <div class="hinweis" style="margin-top:1.8rem">
-      <p><mark class="todo">Platz für die eigene Geschichte des Wirts:</mark> Wer den Laden
-      führt, seit wann genau, woher die Familie kommt, was die Küche ausmacht. Zwei bis
-      vier Sätze reichen, aber sie sollten echt sein. Diesen Kasten danach löschen.</p>
     </div>
   </div>
 </section>
 
 <section class="abschnitt abschnitt--tief">
   <div class="huelle">
+    <div class="abschnitt__kopf">
+      <p class="marke">Aus dem Archiv</p>
+      <h2>Ein Zeitungsbericht von 2004</h2>
+    </div>
+    <div class="raster raster--zwei" style="align-items:start">
+      <div>
+        <p>Am 14. Dezember 2004 schaute der Hanauer Anzeiger bei uns vorbei und
+        testete den Mittagstisch. Damals brachten schwarze Smarts mit unserer
+        Telefonnummer auf der Tür das Essen durch die Innenstadt, und auf der
+        Speisekarte stand ein Versprechen: blitzschnell.</p>
+        <p>Der Tester bestellte unter anderem eine Pizza „Frühstück“, belegt mit
+        Tomaten, Käse, Schinken und zwei Spiegeleiern, damals für 5,50&nbsp;€. Knapp
+        dreißig Minuten später stand das Essen auf seinem Schreibtisch, noch heiß.</p>
+        <p>Diese Pizza gibt es immer noch. Sie steht heute als
+        <a href="speisekarte.html#nr-072">Nummer 72</a> auf der Karte, mit denselben
+        Zutaten. Und der Mittagstisch von damals läuft auch weiter, heute von
+        Dienstag bis Freitag für 7,50&nbsp;€.</p>
+      </div>
+      <div class="block">
+        <h3>Was sich nicht geändert hat</h3>
+        <ul style="margin:0;padding-left:1.1rem;color:var(--still)">
+          <li>Derselbe Standort: Heumarkt 6</li>
+          <li>Dieselbe Telefonnummer</li>
+          <li>Der Mittagstisch, Dienstag bis Freitag</li>
+          <li>Die Pizza „Frühstück“ von damals</li>
+          <li>Montag ist Ruhetag</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="abschnitt">
+  <div class="huelle">
+    {stadt_block}
     <div class="abschnitt__kopf">
       <h2>Gut zu wissen</h2>
     </div>
@@ -718,13 +820,13 @@ def seite_ueber():
         pünktlich bereit. <a href="tel:{TEL_ROH}">{TEL_ZEIG}</a></p>
       </div>
     </div>
-    {bild_team}
+    {team_block}
   </div>
 </section>
 """
     return (kopf("Über uns | Pizzeria Calimero Hanau",
-                 "Die Pizzeria Calimero am Heumarkt in Hanau: seit über 20 Jahren Pizza, "
-                 "Pasta und Salate, zum Abholen, vor Ort oder als Lieferung.",
+                 "Die Pizzeria Calimero am Heumarkt in Hanau: seit über zwanzig Jahren "
+                 "Pizza, Pasta und Salate, zum Abholen, vor Ort oder als Lieferung.",
                  "ueber-uns.html") + body + fuss())
 
 
@@ -809,55 +911,34 @@ def seite_kontakt():
 
 # ---------------------------------------------------------------- Impressum
 def seite_impressum():
+    mail = (f'<a href="mailto:{EMAIL}">{EMAIL}</a>' if EMAIL
+            else '<mark class="todo">E-Mail-Adresse eintragen, gesetzlich vorgeschrieben</mark>')
     body = f"""
 <section class="rechtstext">
   <div class="huelle">
     <h1>Impressum</h1>
 
-    <div class="hinweis" style="border-left-color:var(--rosso);margin-bottom:2rem">
-      <p><strong>Vor dem Livegang ausfüllen.</strong> Alle gelb markierten Stellen müssen
-      durch die echten Angaben des Betreibers ersetzt werden. Ein unvollständiges
-      Impressum ist abmahnfähig.</p>
-    </div>
-
     <h2>Angaben gemäß § 5 DDG</h2>
     <address>
-      <mark class="todo">Vollständiger Name des Betreibers bzw. der Firma inkl. Rechtsform</mark><br>
-      {NAME}<br>
+      {INHABER}<br>
+      Inhaber der Pizzeria Calimero<br>
       {STRASSE}<br>
       {PLZ_ORT}
     </address>
 
-    <h2>Vertreten durch</h2>
-    <p><mark class="todo">Vor- und Nachname des Inhabers oder Geschäftsführers</mark></p>
-
     <h2>Kontakt</h2>
     <p>
       Telefon: <a href="tel:{TEL_ROH}">{TEL_ZEIG}</a><br>
-      E-Mail: <mark class="todo">E-Mail-Adresse eintragen</mark>
+      E-Mail: {mail}
     </p>
 
-    <h2>Registereintrag</h2>
-    <p><mark class="todo">Nur bei GmbH, UG, OHG, KG: Registergericht und Registernummer.
-    Bei einem Einzelunternehmen ohne Handelsregistereintrag diesen Abschnitt löschen.</mark></p>
+    <h2>Steuernummer</h2>
+    <p>{STEUERNR}</p>
 
-    <h2>Umsatzsteuer-Identifikationsnummer</h2>
-    <p>Umsatzsteuer-Identifikationsnummer gemäß § 27a Umsatzsteuergesetz:<br>
-    <mark class="todo">USt-IdNr. eintragen. Falls keine vorhanden ist, stattdessen
-    die Steuernummer angeben oder den Abschnitt löschen.</mark></p>
-
-    <h2>Aufsichtsbehörde</h2>
-    <p>Zuständig für die Gaststättenerlaubnis:<br>
-    <mark class="todo">Zuständige Behörde eintragen, in der Regel das Ordnungsamt der
-    Stadt Hanau. Bitte auf dem Erlaubnisbescheid nachsehen.</mark></p>
-
-    <h2>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h2>
-    <p><mark class="todo">Name und Anschrift der verantwortlichen Person</mark></p>
-
-    <h2>Streitschlichtung</h2>
+    <h2>Streitbeilegung</h2>
     <p>Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung
     bereit: <a href="https://ec.europa.eu/consumers/odr/" target="_blank" rel="noopener">
-    https://ec.europa.eu/consumers/odr/</a>. Unsere E-Mail-Adresse finden Sie oben.</p>
+    ec.europa.eu/consumers/odr</a>.</p>
     <p>Wir sind nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor
     einer Verbraucherschlichtungsstelle teilzunehmen.</p>
 
@@ -882,50 +963,49 @@ def seite_impressum():
     werden wir derartige Links umgehend entfernen.</p>
 
     <h2>Urheberrecht</h2>
-    <p>Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten
+    <p>Die durch den Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten
     unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung
     und jede Art der Verwertung außerhalb der Grenzen des Urheberrechts bedürfen der
     schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers. Downloads und Kopien
-    dieser Seite sind nur für den privaten, nicht kommerziellen Gebrauch gestattet.</p>
-    <p>Die Figur „Calimero“ ist eine geschützte Marke der jeweiligen Rechteinhaber.
-    Die Verwendung auf dieser Website erfolgt im Rahmen der bestehenden
-    Geschäftsbezeichnung des Betriebs.</p>
+    dieser Seite sind nur für den privaten, nicht kommerziellen Gebrauch gestattet.
+    Soweit die Inhalte auf dieser Seite nicht vom Betreiber erstellt wurden, werden die
+    Urheberrechte Dritter beachtet und als solche gekennzeichnet. Sollten Sie dennoch auf
+    eine Urheberrechtsverletzung aufmerksam werden, bitten wir um einen entsprechenden
+    Hinweis.</p>
+    <p>Die Figur „Calimero“ ist eine geschützte Marke der jeweiligen Rechteinhaber. Die
+    Verwendung auf dieser Website erfolgt im Rahmen der bestehenden Geschäftsbezeichnung
+    des Betriebs.</p>
 
     <h2>Bildnachweis</h2>
-    <p><mark class="todo">Sobald Fotos eingebunden sind, hier die Quellen nennen,
-    zum Beispiel „Eigene Aufnahmen“ oder den Namen des Fotografen. Falls Bilder mit
-    KI erzeugt wurden, muss das hier ebenfalls stehen.</mark></p>
+    <p>Logo und Maskottchen: Pizzeria Calimero. Alle weiteren Abbildungen sind eigene
+    Aufnahmen des Betriebs.</p>
+
+    <p style="margin-top:2.4rem;font-size:.9rem">Stand: {STAND}</p>
   </div>
 </section>
 """
     return (kopf("Impressum | Pizzeria Calimero Hanau",
                  "Impressum der Pizzeria Calimero, Heumarkt 6, 63450 Hanau.",
-                 "impressum.html",
-                 extra_head='<meta name="robots" content="noindex, follow">\n')
-            .replace('<meta name="robots" content="{rbt}">\n', "")
+                 "impressum.html", robots="noindex, follow")
             + body + fuss())
 
 
 # ---------------------------------------------------------------- Datenschutz
 def seite_datenschutz():
+    mail = (f'<a href="mailto:{EMAIL}">{EMAIL}</a>' if EMAIL
+            else '<mark class="todo">E-Mail-Adresse eintragen</mark>')
     body = f"""
 <section class="rechtstext">
   <div class="huelle">
     <h1>Datenschutzerklärung</h1>
 
-    <div class="hinweis" style="border-left-color:var(--rosso);margin-bottom:2rem">
-      <p><strong>Vor dem Livegang prüfen.</strong> Die gelb markierten Stellen müssen
-      ergänzt werden. Falls Funktionen wie WhatsApp oder die Karte nicht genutzt werden,
-      den jeweiligen Abschnitt ersatzlos streichen.</p>
-    </div>
-
     <h2>1. Verantwortlicher</h2>
     <p>Verantwortlich für die Datenverarbeitung auf dieser Website ist:</p>
     <address>
-      <mark class="todo">Name / Firma des Betreibers</mark><br>
-      {NAME}, {STRASSE}, {PLZ_ORT}<br>
+      {INHABER}, Inhaber der Pizzeria Calimero<br>
+      {STRASSE}, {PLZ_ORT}<br>
       Telefon: <a href="tel:{TEL_ROH}">{TEL_ZEIG}</a><br>
-      E-Mail: <mark class="todo">E-Mail-Adresse</mark>
+      E-Mail: {mail}
     </address>
     <p>Ein Datenschutzbeauftragter ist gesetzlich nicht erforderlich und wurde
     nicht bestellt.</p>
@@ -950,10 +1030,9 @@ def seite_datenschutz():
     Stabilität und Sicherheit zu gewährleisten. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f
     DSGVO, unser berechtigtes Interesse an einem fehlerfreien und sicheren Betrieb.
     Eine Zusammenführung dieser Daten mit anderen Datenquellen findet nicht statt.</p>
-    <p>Hosting-Dienstleister ist <mark class="todo">Hostinger International Ltd.,
-    61 Lordou Vironos Street, 6023 Larnaca, Zypern, bitte bestätigen bzw. an den
-    tatsächlichen Anbieter anpassen</mark>. Mit dem Anbieter besteht ein Vertrag über
-    die Auftragsverarbeitung nach Art. 28 DSGVO.</p>
+    <p>Hosting-Dienstleister ist Hostinger International Ltd., 61 Lordou Vironos Street,
+    6023 Larnaca, Zypern. Mit dem Anbieter besteht ein Vertrag über die
+    Auftragsverarbeitung nach Art. 28 DSGVO.</p>
 
     <h2>4. Kontaktaufnahme per Telefon</h2>
     <p>Wenn Sie uns anrufen, um zu bestellen oder zu reservieren, verarbeiten wir die
@@ -1039,8 +1118,7 @@ def seite_datenschutz():
     Schloss-Symbol.</p>
 
     <h2>12. Aktualität</h2>
-    <p>Stand dieser Datenschutzerklärung: <mark class="todo">Datum des Livegangs
-    eintragen</mark>. Durch die Weiterentwicklung unserer Website oder aufgrund
+    <p>Stand dieser Datenschutzerklärung: {STAND}. Durch die Weiterentwicklung unserer Website oder aufgrund
     geänderter gesetzlicher Vorgaben kann es notwendig werden, diese Erklärung
     anzupassen.</p>
   </div>
@@ -1089,13 +1167,16 @@ def menu_json():
         {"id": "pizza",      "name": "Pizza",     "groessen": GROESSEN["pizza"],  "extras": True},
         {"id": "pasta",      "name": "Pasta",     "groessen": GROESSEN["pasta"],  "extras": True},
         {"id": "salate",     "name": "Salate",    "groessen": GROESSEN["salate"], "extras": True},
-        {"id": "getraenke",  "name": "Getränke",  "groessen": [],                 "extras": False},
     ]
+    if not GETRAENKE_PLATZHALTER:
+        kategorien.append({"id": "getraenke", "name": "Getränke",
+                           "groessen": GROESSEN.get("getraenke", []), "extras": False})
     artikel = []
     quellen = [("pizza", PIZZA, GROESSEN["pizza"]),
                ("pasta", PASTA, GROESSEN["pasta"]),
                ("salate", SALATE, GROESSEN["salate"]),
-               ("getraenke", GETRAENKE, [])]
+               ("getraenke", (GETRAENKE if not GETRAENKE_PLATZHALTER else []),
+                GROESSEN.get("getraenke", []))]
     for kat, liste, groessen in quellen:
         for nr, name, desc, code, p1, p2 in liste:
             preise = {}
@@ -1131,13 +1212,6 @@ def menu_json():
 # ---------------------------------------------------------------- Bestellseite
 def seite_bestellen():
     warnung = ""
-    if GETRAENKE_PLATZHALTER:
-        warnung = ('<div class="hinweis hinweis--intern">'
-                   '<p><mark class="todo">Hinweis für den Betreiber, vor dem Livegang '
-                   'entfernen:</mark> Die Getränkepreise sind Platzhalter. Sobald die echten '
-                   'Preise in <code>menu_data.py</code> stehen, dort '
-                   '<code>GETRAENKE_PLATZHALTER = False</code> setzen, dann verschwindet '
-                   'dieser Kasten.</p></div>')
 
     body = f"""
 <section class="best-kopf">
@@ -1170,7 +1244,7 @@ def seite_bestellen():
     <div class="suche">
       <label class="nur-sr" for="artikel-suche">Gericht suchen</label>
       <input id="artikel-suche" type="search" inputmode="search"
-             placeholder="Nummer oder Name, z. B. 63" autocomplete="off">
+             placeholder="Gericht suchen, z. B. Salami" autocomplete="off">
     </div>
   </div>
 </div>
@@ -1211,6 +1285,8 @@ def seite_bestellen():
 
 # ---------------------------------------------------------------- Bestellbedingungen
 def seite_bestellbedingungen():
+    mail = (f'<a href="mailto:{EMAIL}">{EMAIL}</a>' if EMAIL
+            else '<mark class="todo">E-Mail-Adresse eintragen</mark>')
     gebiete = ", ".join(GEBIETE)
     mind = ("%.2f" % MINDESTBESTELLWERT).replace(".", ",")
     body = f"""
@@ -1223,10 +1299,10 @@ def seite_bestellbedingungen():
 
     <h2>1. Anbieter</h2>
     <address>
-      <mark class="todo">Name / Firma des Betreibers</mark><br>
-      {NAME}, {STRASSE}, {PLZ_ORT}<br>
+      {INHABER}, Inhaber der Pizzeria Calimero<br>
+      {STRASSE}, {PLZ_ORT}<br>
       Telefon: <a href="tel:{TEL_ROH}">{TEL_ZEIG}</a><br>
-      E-Mail: <mark class="todo">E-Mail-Adresse</mark>
+      E-Mail: {mail}
     </address>
 
     <h2>2. Wie der Vertrag zustande kommt</h2>
@@ -1250,7 +1326,9 @@ def seite_bestellbedingungen():
 
     <h2>4. Preise</h2>
     <p>Alle Preise sind Endpreise in Euro und enthalten die gesetzliche Mehrwertsteuer.
-    Aufpreise für Extra-Zutaten sind im Warenkorb einzeln ausgewiesen.</p>
+    Aufpreise für Extra-Zutaten sind im Warenkorb einzeln ausgewiesen. Bei Getränken
+    ist das Pfand im angegebenen Preis bereits enthalten, es wird nicht zusätzlich
+    berechnet.</p>
     <p>Sonderwünsche im Freitextfeld, die einen Aufpreis auslösen, sind im angezeigten
     Gesamtpreis noch nicht enthalten. Wir nennen Ihnen den Aufpreis bei der Bestätigung,
     bevor der Vertrag zustande kommt.</p>
@@ -1300,8 +1378,7 @@ def seite_bestellbedingungen():
     ec.europa.eu/consumers/odr</a>. Wir sind nicht bereit und nicht verpflichtet, an
     Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
 
-    <p style="margin-top:2rem;color:var(--inchiostro-weich);font-size:.92rem">
-    Stand: <mark class="todo">Datum des Livegangs eintragen</mark></p>
+    <p style="margin-top:2.4rem;font-size:.9rem">Stand: {STAND}</p>
   </div>
 </section>
 """

@@ -558,65 +558,84 @@
     fertigOeffnen(pin, d, gesamt, text);
   }
 
-  /* Zwei Formate: lesefreundlich mit Emojis, und ein kompaktes fuer den Fall,
-     dass die WhatsApp-URL zu lang wird (grosse Bestellungen). Emojis und
-     Zeilenumbrueche werden in der URL mehrfach kodiert, deshalb die Pruefung. */
-  var URL_GRENZE = 1700;
+  /* Nachrichtenformat, drei Stufen.
+     Die Symbole helfen dem Personal, eine Bestellung zu erfassen, ohne den
+     deutschen Text lesen zu muessen. Deshalb sind sie die Standardvariante.
+     Sie kosten aber Platz: ein Emoji belegt in der URL bis zu zwoelf Zeichen,
+     und bei sehr langen Bestellungen ist genau daran schon eine Nachricht
+     unterwegs zerbrochen. Deshalb schaltet das System gestaffelt zurueck,
+     statt es darauf ankommen zu lassen:
+       Stufe 1  bis 1100 Zeichen   volle Symbole, auch je Zeile
+       Stufe 2  bis 1600 Zeichen   nur noch Abschnittssymbole
+       Stufe 3  darueber           reiner Text, keine Sonderzeichen
+     Fast jede normale Bestellung landet in Stufe 1. */
+  var GRENZE_VOLL = 1100;
+  var GRENZE_MITTEL = 1600;
+
+  var SYM = {
+    kopf:  "\uD83C\uDF55",   /* Pizza */
+    plus:  "\u2795",          /* Plus */
+    minus: "\u2796",          /* Minus */
+    notiz: "\u270F\uFE0F",   /* Stift */
+    geld:  "\uD83D\uDCB6",   /* Geldscheine */
+    bar:   "\uD83D\uDCB5",   /* Schein */
+    auto:  "\uD83D\uDE97",   /* Auto */
+    haus:  "\uD83C\uDFE0",   /* Haus */
+    person:"\uD83D\uDC64",   /* Person */
+    tel:   "\uD83D\uDCDE",   /* Telefon */
+    ort:   "\uD83D\uDCCD",   /* Stecknadel */
+    uhr:   "\uD83D\uDD50",   /* Uhr */
+    stift: "\uD83D\uDCDD"    /* Notizblock */
+  };
 
   function nachrichtBauen(pin, d, gesamt) {
-    var lang = nachrichtSchoen(pin, d, gesamt);
-    if (encodeURIComponent(lang).length <= URL_GRENZE) return lang;
-    return nachrichtKompakt(pin, d, gesamt);
+    var voll = nachrichtText(pin, d, gesamt, 2);
+    if (encodeURIComponent(voll).length <= GRENZE_VOLL) return voll;
+    var mittel = nachrichtText(pin, d, gesamt, 1);
+    if (encodeURIComponent(mittel).length <= GRENZE_MITTEL) return mittel;
+    return nachrichtText(pin, d, gesamt, 0);
   }
 
-  function nachrichtSchoen(pin, d, gesamt) {
-    var z = ["🍕 *BESTELLUNG " + pin + "*", "Pizzeria Calimero", ""];
+  /* stufe: 2 = volle Symbole, 1 = nur Abschnittssymbole, 0 = reiner Text */
+  function nachrichtText(pin, d, stufeGesamt, stufe) {
+    var gesamt = stufeGesamt;
+    var s = stufe > 0;              /* Abschnittssymbole */
+    var z = stufe > 1;              /* Symbole je Zeile */
+    var fett = stufe > 0 ? "*" : "";
+    var out = [];
+
+    out.push((s ? SYM.kopf + " " : "") + fett + "BESTELLUNG " + pin + fett);
+    out.push("Pizzeria Calimero");
+    out.push("");
 
     korb.forEach(function (p) {
-      z.push("*" + p.menge + "×* " + p.nr + " " + p.name +
-             (p.groesseLabel ? " _(" + p.groesseLabel + ")_" : ""));
-      if (p.extras.length) z.push("➕ " + p.extras.join(", "));
-      p.optionen.forEach(function (o) { z.push("➕ " + o.label); });
-      if (p.ohne.length) z.push("➖ ohne " + p.ohne.join(", "));
-      if (p.notiz) z.push("✏️ " + p.notiz);
-      z.push("= " + eur(p.preis * p.menge));
-      z.push("");
+      var kopf = p.menge + "\u00D7 " + p.nr + " " + p.name;
+      var groesse = p.groesseLabel ? " (" + p.groesseLabel + ")" : "";
+      out.push(stufe > 0
+        ? fett + kopf + fett + (p.groesseLabel ? " _(" + p.groesseLabel + ")_" : "")
+        : kopf + groesse);
+      if (p.extras.length) out.push((z ? SYM.plus + " " : "+ ") + p.extras.join(", "));
+      p.optionen.forEach(function (o) { out.push((z ? SYM.plus + " " : "+ ") + o.label); });
+      if (p.ohne.length) out.push((z ? SYM.minus + " " : "- ") + "ohne " + p.ohne.join(", "));
+      if (p.notiz) out.push((z ? SYM.notiz + " " : "- ") + p.notiz);
+      out.push("= " + eur(p.preis * p.menge));
+      out.push("");
     });
 
-    z.push("💶 *GESAMT: " + eur(gesamt) + "*");
-    z.push("💵 Zahlung: " + d.zahlung + " bei Übergabe");
-    z.push("");
-    z.push((d.art === "Lieferung" ? "🚗 *LIEFERUNG*" : "🏠 *ABHOLUNG*"));
-    z.push("👤 " + d.name);
-    z.push("📞 " + d.tel);
-    if (d.art === "Lieferung") z.push("📍 " + d.strasse + ", " + d.gebiet);
-    z.push("🕐 " + d.zeit);
-    if (d.notiz) z.push("📝 " + d.notiz);
-    return z.join("\n");
-  }
+    out.push((s ? SYM.geld + " " : "") + fett + "GESAMT: " + eur(gesamt) + fett);
+    out.push((z ? SYM.bar + " " : "") + "Zahlung: " + d.zahlung + " bei Übergabe");
+    out.push("");
 
-  function nachrichtKompakt(pin, d, gesamt) {
-    var z = ["BESTELLUNG " + pin + " / Pizzeria Calimero", ""];
-    korb.forEach(function (p) {
-      z.push(p.menge + "x " + p.nr + " " + p.name +
-             (p.groesseLabel ? " (" + p.groesseLabel + ")" : "") +
-             " = " + eur(p.preis * p.menge).replace(" €", ""));
-      var d2 = [];
-      if (p.extras.length) d2.push("+ " + p.extras.join(", "));
-      p.optionen.forEach(function (o) { d2.push("+ " + o.label); });
-      if (p.ohne.length) d2.push("ohne " + p.ohne.join(", "));
-      if (p.notiz) d2.push(p.notiz);
-      if (d2.length) z.push("   " + d2.join(" | "));
-    });
-    z.push("");
-    z.push("GESAMT: " + eur(gesamt).replace(" €", " EUR"));
-    z.push("Zahlung: " + d.zahlung + " bei Übergabe");
-    z.push(d.art.toUpperCase());
-    z.push(d.name + ", Tel " + d.tel);
-    if (d.art === "Lieferung") z.push(d.strasse + ", " + d.gebiet);
-    z.push("Zeit: " + d.zeit);
-    if (d.notiz) z.push("Hinweis: " + d.notiz);
-    return z.join("\n");
+    var lieferung = d.art === "Lieferung";
+    out.push((s ? (lieferung ? SYM.auto : SYM.haus) + " " : "") +
+             fett + (lieferung ? "LIEFERUNG" : "ABHOLUNG") + fett);
+    out.push((z ? SYM.person + " " : "Name: ") + d.name);
+    out.push((z ? SYM.tel + " " : "Telefon: ") + d.tel);
+    if (lieferung) out.push((z ? SYM.ort + " " : "Adresse: ") + d.strasse + ", " + d.gebiet);
+    out.push((z ? SYM.uhr + " " : "Zeit: ") + d.zeit);
+    if (d.notiz) out.push((z ? SYM.stift + " " : "Hinweis: ") + d.notiz);
+
+    return out.join("\n");
   }
 
   function fertigOeffnen(pin, d, gesamt, text) {

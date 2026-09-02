@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<!-- Pizzeria Calimero, Stil A Avorio. Build 2026-09-02 06:43, CSS 31b80f71fd -->
-<html lang="de" data-build="2026-09-02 06:43">
+<!-- Pizzeria Calimero, Stil A Avorio. Build 2026-09-02 12:14, CSS 432395b397 -->
+<html lang="de" data-build="2026-09-02 12:14">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -23,7 +23,7 @@
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" href="assets/img/favicon-512.png">
 <link rel="apple-touch-icon" href="assets/img/favicon-512.png">
-<link rel="stylesheet" href="assets/css/calimero.css?v=31b80f71fd">
+<link rel="stylesheet" href="assets/css/calimero.css?v=432395b397">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Menu","name":"Speisekarte Pizzeria Calimero",
 "inLanguage":"de-DE","url":"https://calimero-hanau.de/speisekarte.html",
@@ -62,8 +62,8 @@
 <section class="abschnitt" style="padding-bottom:1.5rem">
   <div class="huelle">
     <h1>Speisekarte</h1>
-    <p style="font-size:1.1rem">Gültig ab Mai 2026. Am Telefon reicht die Nummer,
-    zum Beispiel „einmal die 63“. Alle Preise in Euro, inklusive Mehrwertsteuer.</p>
+    <p style="font-size:1.1rem">Gültig ab Mai 2026. Alle Preise in Euro,
+    inklusive Mehrwertsteuer.</p>
     <p style="display:flex;flex-wrap:wrap;gap:.7rem">
       <a class="knopf knopf--tel" href="bestellen.html">Online bestellen</a>
       <a class="knopf knopf--rand" href="speisekarte-calimero-2026.pdf" target="_blank" rel="noopener">
@@ -78,11 +78,12 @@
       <a href="#salate">Salate</a>
       <a href="#pasta">Pasta</a>
       <a href="#pizza">Pizza</a>
+      <a href="#getraenke">Getränke</a>
     </div>
     <div class="suche">
       <label class="nur-sr" for="karte-suche">Speisekarte durchsuchen</label>
       <input id="karte-suche" type="search" inputmode="search"
-             placeholder="Nummer oder Name, z. B. 63"
+             placeholder="Gericht suchen, z. B. Salami"
              autocomplete="off">
       <button class="suche__leeren" type="button" aria-label="Suche zurücksetzen">×</button>
     </div>
@@ -101,87 +102,117 @@
 <li class="gericht" id="nr-001">
   <span class="gericht__nr">001</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Grüner Salat</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Grüner Salat</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>6,50&nbsp;€</span><span>8,50&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">Eisbergsalat, Tomaten, Gurken und Zwiebeln</span>
   </span>
-  <span class="gericht__preise"><span>6,50&nbsp;€</span><span>8,50&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-002">
   <span class="gericht__nr">002</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Italienischer Salat</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Italienischer Salat</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>9,00&nbsp;€</span><span>11,50&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">Eisbergsalat, Tomaten, Gurken, Zwiebeln, Käse, Schinken, Eier, Thunfisch und Oliven</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 2,3,4,6,9</span>
   </span>
-  <span class="gericht__preise"><span>9,00&nbsp;€</span><span>11,50&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-003">
   <span class="gericht__nr">003</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Tomaten-Salat</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Tomaten-Salat</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>7,00&nbsp;€</span><span>9,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">Tomaten und Zwiebeln</span>
   </span>
-  <span class="gericht__preise"><span>7,00&nbsp;€</span><span>9,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-004">
   <span class="gericht__nr">004</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Capricciosa-Salat</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Capricciosa-Salat</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,50&nbsp;€</span><span>10,50&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">Eisbergsalat, Tomaten, Gurken, Zwiebeln, Schafskäse, milde Peperoni, Oliven und Eier</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 6</span>
   </span>
-  <span class="gericht__preise"><span>8,50&nbsp;€</span><span>10,50&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-005">
   <span class="gericht__nr">005</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Salat Caprese</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Salat Caprese</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,50&nbsp;€</span><span>10,50&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">Tomaten, Mozzarella und frischer Basilikum</span>
   </span>
-  <span class="gericht__preise"><span>8,50&nbsp;€</span><span>10,50&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-006">
   <span class="gericht__nr">006</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Salat „Chef“</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Salat „Chef“</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>10,00&nbsp;€</span><span>12,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">Eisbergsalat, Tomaten, Gurken, Zwiebeln, Käse, Schinken, Eier, Oliven, Thunfisch, Paprika, Artischocken und Kapern</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 2,3,4,6,9</span>
   </span>
-  <span class="gericht__preise"><span>10,00&nbsp;€</span><span>12,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-007">
   <span class="gericht__nr">007</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Marinara-Salat</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Marinara-Salat</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>9,50&nbsp;€</span><span>11,50&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">Eisbergsalat, frische Meeresfrüchte und Knoblauch</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 2,3,4,9,h,g</span>
   </span>
-  <span class="gericht__preise"><span>9,50&nbsp;€</span><span>11,50&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-008">
   <span class="gericht__nr">008</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Florida-Salat</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Florida-Salat</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>9,50&nbsp;€</span><span>11,50&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">Eisbergsalat, Mais, Tomaten, Gurken, Zwiebeln, Hähnchenbrust, extra Käse und Shrimps</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 2,3,9,d,h,g</span>
   </span>
-  <span class="gericht__preise"><span>9,50&nbsp;€</span><span>11,50&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-009">
   <span class="gericht__nr">009</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Gurkensalat</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Gurkensalat</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>6,50&nbsp;€</span><span>8,50&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Joghurt-Dressing</span>
   </span>
-  <span class="gericht__preise"><span>6,50&nbsp;€</span><span>8,50&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-010">
   <span class="gericht__nr">010</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Mexiko-Salat</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Mexiko-Salat</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>9,00&nbsp;€</span><span>10,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">Eisbergsalat, Tomaten, Gurken, Zwiebeln, Mais, Karotten, Peperoni mild und Ei</span>
   </span>
-  <span class="gericht__preise"><span>9,00&nbsp;€</span><span>10,00&nbsp;€</span></span>
 </li>
   </ul>
   <p class="ornament" aria-hidden="true" style="margin-top:1.6rem"><span>&#9670;</span></p>
@@ -197,237 +228,321 @@
 <li class="gericht" id="nr-012">
   <span class="gericht__nr">012</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Spaghetti Napoli</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Spaghetti Napoli</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>7,50&nbsp;€</span><span>9,50&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce</span>
   </span>
-  <span class="gericht__preise"><span>7,50&nbsp;€</span><span>9,50&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-013">
   <span class="gericht__nr">013</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Spaghetti Bolognese</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Spaghetti Bolognese</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,00&nbsp;€</span><span>10,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Hackfleischsauce</span>
   </span>
-  <span class="gericht__preise"><span>8,00&nbsp;€</span><span>10,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-014">
   <span class="gericht__nr">014</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Spaghetti Carbonara</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Spaghetti Carbonara</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>9,00&nbsp;€</span><span>11,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Sahne, Schinken und Ei</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 2,3,4,9</span>
   </span>
-  <span class="gericht__preise"><span>9,00&nbsp;€</span><span>11,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-015">
   <span class="gericht__nr">015</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Spaghetti alla Olio</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Spaghetti alla Olio</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,50&nbsp;€</span><span>10,50&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Olivenöl und Knoblauch (scharf)</span>
   </span>
-  <span class="gericht__preise"><span>8,50&nbsp;€</span><span>10,50&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-016">
   <span class="gericht__nr">016</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Spaghetti con Tonno</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Spaghetti con Tonno</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>9,00&nbsp;€</span><span>11,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Thunfisch, Schafskäse und Oliven in Sahnesauce</span>
   </span>
-  <span class="gericht__preise"><span>9,00&nbsp;€</span><span>11,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-017">
   <span class="gericht__nr">017</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Spaghetti Marinara</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Spaghetti Marinara</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>9,50&nbsp;€</span><span>11,50&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce und Meeresfrüchten</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: h,g</span>
   </span>
-  <span class="gericht__preise"><span>9,50&nbsp;€</span><span>11,50&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-018">
   <span class="gericht__nr">018</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Rigatoni Broccoli</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Rigatoni Broccoli</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,50&nbsp;€</span><span>10,50&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Sahne und frischem Broccoli</span>
   </span>
-  <span class="gericht__preise"><span>8,50&nbsp;€</span><span>10,50&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-019">
   <span class="gericht__nr">019</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Rigatoni al Forno</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Rigatoni al Forno</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>9,00&nbsp;€</span><span>11,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Hackfleischsauce und Käse überbacken</span>
   </span>
-  <span class="gericht__preise"><span>9,00&nbsp;€</span><span>11,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-020">
   <span class="gericht__nr">020</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Rigatoni alla „Chef“</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Rigatoni alla „Chef“</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>9,00&nbsp;€</span><span>11,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Sahne, Bolognese, Schinken, Erbsen und frischen Pilzen</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 2,3,4,9</span>
   </span>
-  <span class="gericht__preise"><span>9,00&nbsp;€</span><span>11,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-021">
   <span class="gericht__nr">021</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Rigatoni Quattro Formaggio</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Rigatoni Quattro Formaggio</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>9,50&nbsp;€</span><span>11,50&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit vier verschiedenen Käsesorten</span>
   </span>
-  <span class="gericht__preise"><span>9,50&nbsp;€</span><span>11,50&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-022">
   <span class="gericht__nr">022</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Rigatoni Broccoli Gorgonzola</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Rigatoni Broccoli Gorgonzola</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>9,00&nbsp;€</span><span>11,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit frischem Broccoli und Gorgonzolakäse</span>
   </span>
-  <span class="gericht__preise"><span>9,00&nbsp;€</span><span>11,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-023">
   <span class="gericht__nr">023</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Tortellini alla Panna*</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Tortellini alla Panna*</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,50&nbsp;€</span><span>10,50&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Sahne-Schinkensauce</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 2,3,4,9</span>
   </span>
-  <span class="gericht__preise"><span>8,50&nbsp;€</span><span>10,50&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-024">
   <span class="gericht__nr">024</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Tortellini Bolognese*</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Tortellini Bolognese*</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,00&nbsp;€</span><span>10,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Hackfleischsauce</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 2,3,4,9</span>
   </span>
-  <span class="gericht__preise"><span>8,00&nbsp;€</span><span>10,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-025">
   <span class="gericht__nr">025</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Tortellini alla „Chef“*</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Tortellini alla „Chef“*</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>9,00&nbsp;€</span><span>11,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Sahne, Bolognese, Schinken, Erbsen und frischen Pilzen</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 2,3,4,9</span>
   </span>
-  <span class="gericht__preise"><span>9,00&nbsp;€</span><span>11,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-026">
   <span class="gericht__nr">026</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Tortellini Gorgonzola*</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Tortellini Gorgonzola*</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,50&nbsp;€</span><span>11,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Sahne-Gorgonzolasauce</span>
   </span>
-  <span class="gericht__preise"><span>8,50&nbsp;€</span><span>11,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-027">
   <span class="gericht__nr">027</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Tagliatelle Panna</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Tagliatelle Panna</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,50&nbsp;€</span><span>10,50&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Sahne-Schinkensauce</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 2,3,4,6,9</span>
   </span>
-  <span class="gericht__preise"><span>8,50&nbsp;€</span><span>10,50&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-028">
   <span class="gericht__nr">028</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Tagliatelle Pesto</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Tagliatelle Pesto</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,50&nbsp;€</span><span>10,50&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Pesto alla Genovese</span>
   </span>
-  <span class="gericht__preise"><span>8,50&nbsp;€</span><span>10,50&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-029">
   <span class="gericht__nr">029</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Tagliatelle alla „Chef“</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Tagliatelle alla „Chef“</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>9,00&nbsp;€</span><span>11,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit frischen Pilzen, Pfifferlingen und Sahne-Tomatensauce</span>
   </span>
-  <span class="gericht__preise"><span>9,00&nbsp;€</span><span>11,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-030">
   <span class="gericht__nr">030</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Trio Pasta</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Trio Pasta</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>10,00&nbsp;€</span><span>12,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit drei verschiedenen Nudelsorten</span>
   </span>
-  <span class="gericht__preise"><span>10,00&nbsp;€</span><span>12,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-031">
   <span class="gericht__nr">031</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Gnocchi</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Gnocchi</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,00&nbsp;€</span><span>10,50&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce und frischem Basilikum</span>
   </span>
-  <span class="gericht__preise"><span>8,00&nbsp;€</span><span>10,50&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-032">
   <span class="gericht__nr">032</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Gnocchi</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Gnocchi</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,50&nbsp;€</span><span>11,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Gorgonzolasauce</span>
   </span>
-  <span class="gericht__preise"><span>8,50&nbsp;€</span><span>11,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-033">
   <span class="gericht__nr">033</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Lasagne</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Lasagne</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,50&nbsp;€</span><span>10,50&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Bechamelsauce</span>
   </span>
-  <span class="gericht__preise"><span>8,50&nbsp;€</span><span>10,50&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-034">
   <span class="gericht__nr">034</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Lasagne Spezial</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Lasagne Spezial</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>9,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit frischen Pilzen, Schinken und Eiern</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 2,3,4,6,9</span>
   </span>
-  <span class="gericht__preise"><span>9,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-035">
   <span class="gericht__nr">035</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Tagliatelle Tonno</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Tagliatelle Tonno</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>9,00&nbsp;€</span><span>11,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Thunfisch, Oliven und Knoblauch</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 6</span>
   </span>
-  <span class="gericht__preise"><span>9,00&nbsp;€</span><span>11,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-036">
   <span class="gericht__nr">036</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Nudeln Vegetaria</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Nudeln Vegetaria</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>9,50&nbsp;€</span><span>11,50&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Mais, Erbsen, Pilzen, Paprika, in Sahnesauce</span>
   </span>
-  <span class="gericht__preise"><span>9,50&nbsp;€</span><span>11,50&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-037">
   <span class="gericht__nr">037</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pasta Mista Primavera</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pasta Mista Primavera</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>9,50&nbsp;€</span><span>11,50&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Kräutersahnesauce und Schinken</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 2,3,4,6,9</span>
   </span>
-  <span class="gericht__preise"><span>9,50&nbsp;€</span><span>11,50&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-038">
   <span class="gericht__nr">038</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pasta Mista alla „Chef“</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pasta Mista alla „Chef“</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>10,00&nbsp;€</span><span>12,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Sahne, Bolognese, Schinken, Erbsen und frischen Pilzen</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 2,3,4,6,9</span>
   </span>
-  <span class="gericht__preise"><span>10,00&nbsp;€</span><span>12,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-039">
   <span class="gericht__nr">039</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Tagliatelle al arrabbiata</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Tagliatelle al arrabbiata</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,50&nbsp;€</span><span>10,50&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce (scharf)</span>
   </span>
-  <span class="gericht__preise"><span>8,50&nbsp;€</span><span>10,50&nbsp;€</span></span>
 </li>
   </ul>
   <p class="ornament" aria-hidden="true" style="margin-top:1.6rem"><span>&#9670;</span></p>
@@ -443,322 +558,531 @@
 <li class="gericht" id="nr-040">
   <span class="gericht__nr">040</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Margarita</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Margarita</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>7,50&nbsp;€</span><span>10,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce und Käse</span>
   </span>
-  <span class="gericht__preise"><span>7,50&nbsp;€</span><span>10,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-041">
   <span class="gericht__nr">041</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Salami</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Salami</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,00&nbsp;€</span><span>11,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Käse und Salami</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 2,3,4</span>
   </span>
-  <span class="gericht__preise"><span>8,00&nbsp;€</span><span>11,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-042">
   <span class="gericht__nr">042</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Schinken</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Schinken</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,00&nbsp;€</span><span>11,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Käse und Schinken</span>
   </span>
-  <span class="gericht__preise"><span>8,00&nbsp;€</span><span>11,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-043">
   <span class="gericht__nr">043</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Pilze</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Pilze</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,00&nbsp;€</span><span>11,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Käse und frischen Pilzen</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 2,3,9</span>
   </span>
-  <span class="gericht__preise"><span>8,00&nbsp;€</span><span>11,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-044">
   <span class="gericht__nr">044</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Mix</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Mix</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Käse, Salami, Peperoniwurst und Pilzen</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 2,3,4</span>
   </span>
-  <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-045">
   <span class="gericht__nr">045</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Peperoniwurst</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Peperoniwurst</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,00&nbsp;€</span><span>11,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Käse und Peperoniwurst</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 2,3,4</span>
   </span>
-  <span class="gericht__preise"><span>8,00&nbsp;€</span><span>11,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-046">
   <span class="gericht__nr">046</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Broccoli</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Broccoli</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Käse, frischem Broccoli und Knoblauch</span>
   </span>
-  <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-047">
   <span class="gericht__nr">047</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Vegetaria</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Vegetaria</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>9,00&nbsp;€</span><span>12,50&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Käse, Paprika, Artischocken, Zwiebeln, frischen Pilzen und Mais</span>
   </span>
-  <span class="gericht__preise"><span>9,00&nbsp;€</span><span>12,50&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-048">
   <span class="gericht__nr">048</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Roma</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Roma</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>9,00&nbsp;€</span><span>12,50&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Käse, Salami, Schinken, frischen Pilzen, Zwiebeln und Knoblauch</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 2,3,4,9,d</span>
   </span>
-  <span class="gericht__preise"><span>9,00&nbsp;€</span><span>12,50&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-049">
   <span class="gericht__nr">049</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Hawaii</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Hawaii</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Käse, Schinken und Ananas</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 2,3,4,9,d</span>
   </span>
-  <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-050">
   <span class="gericht__nr">050</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Tonno</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Tonno</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Käse, Thunfisch und Zwiebeln</span>
   </span>
-  <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-051">
   <span class="gericht__nr">051</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Capriccio</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Capriccio</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>9,50&nbsp;€</span><span>13,50&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Käse, Salami, Schinken, Peperoniwurst, frischen Pilzen, Zwiebeln, Paprika und Oliven</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 2,3,4,6,9</span>
   </span>
-  <span class="gericht__preise"><span>9,50&nbsp;€</span><span>13,50&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-052">
   <span class="gericht__nr">052</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Maestro</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Maestro</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>9,00&nbsp;€</span><span>12,50&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Käse, Schinken, Kapern, frischen Pilzen und Eiern</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 2,3,4,9</span>
   </span>
-  <span class="gericht__preise"><span>9,00&nbsp;€</span><span>12,50&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-053">
   <span class="gericht__nr">053</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza 4 Jahreszeiten</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza 4 Jahreszeiten</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,50&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Käse, Salami, Schinken, frischen Pilzen und Oliven</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 2,3,4,6,9</span>
   </span>
-  <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,50&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-054">
   <span class="gericht__nr">054</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Frutti di Mare</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Frutti di Mare</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>9,00&nbsp;€</span><span>13,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Käse und Meeresfrüchten</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: g,h</span>
   </span>
-  <span class="gericht__preise"><span>9,00&nbsp;€</span><span>13,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-055">
   <span class="gericht__nr">055</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Mozzarella</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Mozzarella</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Käse, Mozzarella und frischem Basilikum</span>
   </span>
-  <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-056">
   <span class="gericht__nr">056</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Bolognese</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Bolognese</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>9,00&nbsp;€</span><span>12,50&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Käse, Hackfleischsauce, Schinken, Salami, frischen Pilzen und Knoblauch</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 2,3,4,9</span>
   </span>
-  <span class="gericht__preise"><span>9,00&nbsp;€</span><span>12,50&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-057">
   <span class="gericht__nr">057</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Pecora</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Pecora</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Käse, Schinken, Pfifferlingen und Schafskäse</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 2,3,4,9</span>
   </span>
-  <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-058">
   <span class="gericht__nr">058</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Bella</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Bella</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>9,00&nbsp;€</span><span>13,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Käse, Salami, Schinken, frischen Pilzen, Spinat, Broccoli und Knoblauch</span>
   </span>
-  <span class="gericht__preise"><span>9,00&nbsp;€</span><span>13,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-059">
   <span class="gericht__nr">059</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Diyavolo</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Diyavolo</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Käse, Peperoniwurst, frischen Pilzen und scharfen Peperoni</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 2,3,4</span>
   </span>
-  <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-060">
   <span class="gericht__nr">060</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Calabria</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Calabria</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Käse, Schinken, frischen Pilzen und Artischocken</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 2,3,4,9</span>
   </span>
-  <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-061">
   <span class="gericht__nr">061</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Calzone (Teigtasche)</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Calzone (Teigtasche)</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Käse, Schinken, Salami und Zwiebeln</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 2,3,4,9</span>
   </span>
-  <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-062">
   <span class="gericht__nr">062</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Mafiosa</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Mafiosa</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>9,00&nbsp;€</span><span>12,50&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Käse, Thunfisch, Erbsen, Mais, Knoblauch und scharfen Peperoni</span>
   </span>
-  <span class="gericht__preise"><span>9,00&nbsp;€</span><span>12,50&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-063">
   <span class="gericht__nr">063</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Calimero</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Calimero</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>9,50&nbsp;€</span><span>13,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Käse, Shrimps, Sardellen, frischen Pilzen, Zwiebeln, Kapern und Oliven</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 6,9,h</span>
   </span>
-  <span class="gericht__preise"><span>9,50&nbsp;€</span><span>13,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-064">
   <span class="gericht__nr">064</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Ravenna</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Ravenna</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Hackfleischsauce, Käse und Zwiebeln</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 6</span>
   </span>
-  <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-065">
   <span class="gericht__nr">065</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Florida</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Florida</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>9,00&nbsp;€</span><span>12,50&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Käse, Hähnchenbrust, Mais, frischen Pilzen und viel Käse</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 2,3,9,d</span>
   </span>
-  <span class="gericht__preise"><span>9,00&nbsp;€</span><span>12,50&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-066">
   <span class="gericht__nr">066</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Istanbul</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Istanbul</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Käse, Knoblauchwurst, frischen Pilzen und scharfen Peperoni</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 2,3,4</span>
   </span>
-  <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-067">
   <span class="gericht__nr">067</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Greco</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Greco</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>9,00&nbsp;€</span><span>12,50&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Käse, Knoblauchwurst, Oliven, Schafskäse und Zwiebeln</span>
   </span>
-  <span class="gericht__preise"><span>9,00&nbsp;€</span><span>12,50&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-068">
   <span class="gericht__nr">068</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Krabben</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Krabben</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>9,00&nbsp;€</span><span>12,50&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Käse, Krabben und Knoblauch</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 9,h</span>
   </span>
-  <span class="gericht__preise"><span>9,00&nbsp;€</span><span>12,50&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-069">
   <span class="gericht__nr">069</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza quattro Formaggio</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza quattro Formaggio</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>9,50&nbsp;€</span><span>13,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce und 4 verschiedenen Käsesorten</span>
   </span>
-  <span class="gericht__preise"><span>9,50&nbsp;€</span><span>13,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-070">
   <span class="gericht__nr">070</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Spezial</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Spezial</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Käse, Salami, Schinken und frischen Pilzen</span>
   </span>
-  <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-071">
   <span class="gericht__nr">071</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Con Tonno</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Con Tonno</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Käse, Thunfisch, Pilzen, scharf</span>
   </span>
-  <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-072">
   <span class="gericht__nr">072</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Frühstück</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Frühstück</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Käse, Schinken und 2 Spiegeleiern</span>
     <span class="gericht__code">Zusatzstoffe / Allergene: 2,3,4,9</span>
   </span>
-  <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-073">
   <span class="gericht__nr">073</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Rucola</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Rucola</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">mit Tomatensauce, Mozzarella und Rucolasalat</span>
   </span>
-  <span class="gericht__preise"><span>8,50&nbsp;€</span><span>12,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-074">
   <span class="gericht__nr">074</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza-Brot mit Knoblauch</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza-Brot mit Knoblauch</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>5,00&nbsp;€</span><span>7,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">knusprig gebackenes Brot</span>
   </span>
-  <span class="gericht__preise"><span>5,00&nbsp;€</span><span>7,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-075">
   <span class="gericht__nr">075</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Pizza Familia Ø 40 cm</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Pizza Familia Ø 40 cm</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>19,00&nbsp;€</span></span>
+    </span>
     <span class="gericht__zutaten">3 Beilagen nach Wahl</span>
   </span>
-  <span class="gericht__preise"><span>19,00&nbsp;€</span></span>
 </li>
 <li class="gericht" id="nr-076">
   <span class="gericht__nr">076</span>
   <span class="gericht__mitte">
-    <span class="gericht__name">Bruscetta</span>
+    <span class="gericht__zeile">
+      <span class="gericht__name">Bruscetta</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>6,00&nbsp;€</span><span>7,50&nbsp;€</span></span>
+    </span>
   </span>
-  <span class="gericht__preise"><span>6,00&nbsp;€</span><span>7,50&nbsp;€</span></span>
 </li>
   </ul>
   <p class="ornament" aria-hidden="true" style="margin-top:1.6rem"><span>&#9670;</span></p>
   <div class="hinweis"><p><strong>Extra-Zutaten:</strong> Knoblauch, Schinken, Peperoniwurst, Artischocken, Sardellen, Thunfisch, Champignons, Spinat, Broccoli, Käse, Zwiebeln, Paprika, Peperoni, Kapern, Oliven, Ei, Hähnchenbrust und mehr. Aufpreis 0,50&nbsp;€ bei ø&nbsp;26&nbsp;cm, 1,00&nbsp;€ bei ø&nbsp;30&nbsp;cm.</p></div>
+</section>
+    <section class="gruppe" id="getraenke" data-leer="nein">
+  <div class="gruppe__kopf">
+    <h2>Getränke</h2>
+    <span class="gruppe__rechts"><a class="gruppe__bestellen" href="bestellen.html#getraenke">Bestellen</a><span class="gruppe__masse"><span>1,0&nbsp;l</span><span>0,33&nbsp;l</span></span></span>
+  </div>
+  
+  <ul class="gerichte">
+<li class="gericht" id="nr-G01">
+  <span class="gericht__nr">G01</span>
+  <span class="gericht__mitte">
+    <span class="gericht__zeile">
+      <span class="gericht__name">Sinalco Cola</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>4,00&nbsp;€</span><span>3,00&nbsp;€</span></span>
+    </span>
+    <span class="gericht__code">Zusatzstoffe / Allergene: 1</span>
+  </span>
+</li>
+<li class="gericht" id="nr-G02">
+  <span class="gericht__nr">G02</span>
+  <span class="gericht__mitte">
+    <span class="gericht__zeile">
+      <span class="gericht__name">Sinalco Cola Zero</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>4,00&nbsp;€</span><span>3,00&nbsp;€</span></span>
+    </span>
+    <span class="gericht__code">Zusatzstoffe / Allergene: 1,8</span>
+  </span>
+</li>
+<li class="gericht" id="nr-G03">
+  <span class="gericht__nr">G03</span>
+  <span class="gericht__mitte">
+    <span class="gericht__zeile">
+      <span class="gericht__name">Sinalco Orange</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>4,00&nbsp;€</span><span>3,00&nbsp;€</span></span>
+    </span>
+  </span>
+</li>
+<li class="gericht" id="nr-G04">
+  <span class="gericht__nr">G04</span>
+  <span class="gericht__mitte">
+    <span class="gericht__zeile">
+      <span class="gericht__name">Sinalco Cola Mix</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>4,00&nbsp;€</span><span>3,00&nbsp;€</span></span>
+    </span>
+    <span class="gericht__code">Zusatzstoffe / Allergene: 1</span>
+  </span>
+</li>
+<li class="gericht" id="nr-G05">
+  <span class="gericht__nr">G05</span>
+  <span class="gericht__mitte">
+    <span class="gericht__zeile">
+      <span class="gericht__name">Uludağ Gazoz</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>2,50&nbsp;€</span></span>
+    </span>
+    <span class="gericht__zutaten">0,5 l Flasche</span>
+  </span>
+</li>
+<li class="gericht" id="nr-G06">
+  <span class="gericht__nr">G06</span>
+  <span class="gericht__mitte">
+    <span class="gericht__zeile">
+      <span class="gericht__name">Körfez Ayran</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>2,00&nbsp;€</span></span>
+    </span>
+    <span class="gericht__zutaten">0,25 l Becher</span>
+  </span>
+</li>
+<li class="gericht" id="nr-G07">
+  <span class="gericht__nr">G07</span>
+  <span class="gericht__mitte">
+    <span class="gericht__zeile">
+      <span class="gericht__name">Rhönsprudel, mit Kohlensäure</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>2,50&nbsp;€</span></span>
+    </span>
+    <span class="gericht__zutaten">0,5 l Flasche</span>
+  </span>
+</li>
+<li class="gericht" id="nr-G08">
+  <span class="gericht__nr">G08</span>
+  <span class="gericht__mitte">
+    <span class="gericht__zeile">
+      <span class="gericht__name">Rhönsprudel, ohne Kohlensäure</span>
+      <span class="gericht__fuehrung" aria-hidden="true"></span>
+      <span class="gericht__preise"><span>2,50&nbsp;€</span></span>
+    </span>
+    <span class="gericht__zutaten">0,5 l Flasche</span>
+  </span>
+</li>
+  </ul>
+  <p class="ornament" aria-hidden="true" style="margin-top:1.6rem"><span>&#9670;</span></p>
+  <div class="hinweis"><p>Sinalco gibt es als 1,0-Liter-Flasche und im 0,33-Liter-Glas. Die übrigen Getränke in der angegebenen Größe. <strong>Alle Getränkepreise verstehen sich inklusive Pfand.</strong></p></div>
 </section>
     <p class="kein-treffer">Zu dieser Suche gibt es kein Gericht.
     Rufen Sie uns gerne an: <a href="tel:+4961819529595">06181 95 2 95 95</a>.</p>
@@ -868,6 +1192,6 @@
 </div>
 
 
-<script src="assets/js/calimero.js?v=aad7eb503b" defer></script>
+<script src="assets/js/calimero.js?v=6eb4246579" defer></script>
 </body>
 </html>
