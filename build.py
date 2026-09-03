@@ -283,7 +283,7 @@ def fuss(extra_js=""):
         in der Hanauer Innenstadt.</p>
       </div>
       <div>
-        <h3>Bestellen</h3>
+        <h2>Bestellen</h2>
         <a class="fuss__tel" href="tel:{TEL_ROH}">{TEL_ZEIG}</a>
         <ul class="fuss__liste">
           <li>Lieferung in Hanau frei Haus</li>
@@ -292,13 +292,13 @@ def fuss(extra_js=""):
         </ul>
       </div>
       <div>
-        <h3>Öffnungszeiten</h3>
+        <h2>Öffnungszeiten</h2>
         <ul class="zeiten zeiten--stapel">
         {zeilen}
         </ul>
       </div>
       <div>
-        <h3>Adresse</h3>
+        <h2>Adresse</h2>
         <address>
           {NAME}<br>
           {STRASSE}<br>
@@ -744,7 +744,7 @@ def seite_ueber():
 
     <div class="raster raster--zwei" style="margin-top:2.4rem">
       <div class="block">
-        <h3>Was wir machen</h3>
+        <h2>Was wir machen</h2>
         <p>Pizza in zwei Größen und als Familienpizza mit vierzig Zentimetern, dazu
         Pasta in allen Varianten, Lasagne, Gnocchi und Salate. Fünfundsiebzig
         Gerichte stehen auf der Karte.</p>
@@ -752,7 +752,7 @@ def seite_ueber():
         zum Hierbleiben oder zur Lieferung nach Hause, in Hanau frei Haus.</p>
       </div>
       <div class="block">
-        <h3>Der Vogel auf dem Schild</h3>
+        <h2>Der Vogel auf dem Schild</h2>
         <p>Calimero ist das schwarze Küken mit der Eierschale auf dem Kopf, das seit
         den sechziger Jahren aus italienischen Werbespots bekannt ist. Klein, frech
         und immer ein bisschen unterschätzt.</p>
@@ -784,7 +784,7 @@ def seite_ueber():
         Dienstag bis Freitag für 7,50&nbsp;€.</p>
       </div>
       <div class="block">
-        <h3>Was sich nicht geändert hat</h3>
+        <h2>Was sich nicht geändert hat</h2>
         <ul style="margin:0;padding-left:1.1rem;color:var(--still)">
           <li>Derselbe Standort: Heumarkt 6</li>
           <li>Dieselbe Telefonnummer</li>
@@ -805,17 +805,17 @@ def seite_ueber():
     </div>
     <div class="raster raster--drei">
       <div class="block">
-        <h3>Zahlung</h3>
+        <h2>Zahlung</h2>
         <p>Vor Ort können Sie mit EC-Karte zahlen. Lieferungen werden bar an der
         Haustür bezahlt.</p>
       </div>
       <div class="block">
-        <h3>Mittagsangebot</h3>
+        <h2>Mittagsangebot</h2>
         <p>Dienstag bis Freitag, 11:30 bis 14:30 Uhr: Pizza, Nudeln oder Salat in
         normaler Größe für 7,50&nbsp;€. Ausgenommen Nr. 6, 30, 38 und 51.</p>
       </div>
       <div class="block">
-        <h3>Größere Bestellungen</h3>
+        <h2>Größere Bestellungen</h2>
         <p>Büro, Baustelle, Geburtstag? Rufen Sie kurz vorher an, dann steht alles
         pünktlich bereit. <a href="tel:{TEL_ROH}">{TEL_ZEIG}</a></p>
       </div>
@@ -856,20 +856,20 @@ def seite_kontakt():
 
     <div class="raster raster--drei" style="margin-top:2.4rem">
       <div class="block">
-        <h3>Adresse</h3>
+        <h2>Adresse</h2>
         <address>
           {NAME}<br>{STRASSE}<br>{PLZ_ORT}
         </address>
         <p style="margin-top:.8rem"><a href="{MAPS_LINK}" target="_blank" rel="noopener">Route planen</a></p>
       </div>
       <div class="block">
-        <h3>Öffnungszeiten</h3>
+        <h2>Öffnungszeiten</h2>
         <ul class="zeiten">
         {zeilen}
         </ul>
       </div>
       <div class="block">
-        <h3>Lieferung</h3>
+        <h2>Lieferung</h2>
         <p>In Hanau liefern wir frei Haus, ab einem Bestellwert von 11&nbsp;€.</p>
         <ul class="gebiete">
         {gebiete}
@@ -985,7 +985,7 @@ def seite_impressum():
 </section>
 """
     return (kopf("Impressum | Pizzeria Calimero Hanau",
-                 "Impressum der Pizzeria Calimero, Heumarkt 6, 63450 Hanau.",
+                 "Impressum und Anbieterkennzeichnung der Pizzeria Calimero, Heumarkt 6 in 63450 Hanau, mit Kontaktdaten und Angaben nach § 5 DDG.",
                  "impressum.html", robots="noindex, follow")
             + body + fuss())
 
@@ -1125,7 +1125,7 @@ def seite_datenschutz():
 </section>
 """
     return (kopf("Datenschutzerklärung | Pizzeria Calimero Hanau",
-                 "Datenschutzerklärung der Pizzeria Calimero, Heumarkt 6, Hanau.",
+                 "Datenschutzerklärung der Pizzeria Calimero in Hanau: welche Daten bei Bestellung, Kontakt und Kartenanzeige verarbeitet werden und welche Rechte Sie haben.",
                  "datenschutz.html",
                  extra_head='<meta name="robots" content="noindex, follow">\n')
             .replace('<meta name="robots" content="{rbt}">\n', "")
@@ -1150,7 +1150,7 @@ def seite_404():
 </section>
 """
     return (kopf("Seite nicht gefunden | Pizzeria Calimero Hanau",
-                 "Die aufgerufene Seite existiert nicht.", "404.html",
+                 "Diese Seite der Pizzeria Calimero in Hanau existiert nicht. Hier geht es zurück zur Speisekarte und zur Bestellung.", "404.html",
                  extra_head='<meta name="robots" content="noindex, nofollow">\n')
             .replace('<meta name="robots" content="{rbt}">\n', "")
             + body + fuss())

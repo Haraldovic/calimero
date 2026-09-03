@@ -746,3 +746,78 @@ body[data-seite="bestellen"] .consent{bottom:1rem}
 /* Lange URLs in den Rechtstexten dürfen umbrechen */
 .rechtstext p,.rechtstext li,.rechtstext a,.rechtstext address{overflow-wrap:anywhere}
 .laufband{max-width:100vw}
+
+/* =========================================================
+   POLITUR
+   ========================================================= */
+
+/* Blockueberschriften sind jetzt h2, sollen aber weiter wie h3 wirken */
+.block h2,.empfehlung h3,.legende h3{font-family:var(--serif);
+  font-size:clamp(1.16rem,1.05rem + .5vw,1.38rem);line-height:1.2;letter-spacing:-.008em;
+  margin:0 0 .6em;color:var(--gruen)}
+.empfehlung h3{font-family:var(--display);font-size:clamp(1.8rem,3.6vw,3rem);
+  letter-spacing:-.02em;margin-bottom:.35em}
+.legende h3{font-family:var(--sans);font-size:.7rem;font-weight:700;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:1.2em}
+.fuss h2{color:var(--gold-hell);font-family:var(--sans);font-size:.66rem;font-weight:700;
+  letter-spacing:.24em;text-transform:uppercase;margin:0 0 1.4em}
+
+/* Textmarkierung in der Hausfarbe */
+::selection{background:var(--gold);color:#fff}
+
+/* Aktionsschaltflaechen: leicht gerundet, mit ruhigem Schatten und Hebung */
+.knopf,.kopf__tel,#korb-leiste{border-radius:5px}
+.knopf--dunkel,.knopf--tel,.knopf--wa,.kopf__tel{
+  box-shadow:0 6px 18px -10px rgba(23,21,18,.55);
+  transition:background .28s,color .28s,border-color .28s,transform .28s,box-shadow .28s}
+.knopf--dunkel:hover,.knopf--tel:hover,.knopf--wa:hover,.kopf__tel:hover{
+  transform:translateY(-1px);box-shadow:0 12px 26px -12px rgba(23,21,18,.5)}
+.knopf--dunkel:active,.knopf--tel:active,.knopf--wa:active,.kopf__tel:active{
+  transform:translateY(0);box-shadow:0 4px 12px -8px rgba(23,21,18,.55)}
+.knopf--linie,.knopf--rand{border-radius:5px;transition:background .28s,color .28s,
+  border-color .28s,transform .28s}
+.knopf--linie:hover,.knopf--rand:hover{transform:translateY(-1px)}
+#korb-leiste{transition:background .25s,transform .25s,box-shadow .25s}
+#korb-leiste:hover{transform:translateY(-2px)}
+.aktionsleiste .knopf{border-radius:0;box-shadow:none}
+.aktionsleiste .knopf:hover{transform:none}
+@media (prefers-reduced-motion:reduce){
+  .knopf:hover,#korb-leiste:hover{transform:none!important}
+}
+
+/* Fokus sichtbar, aber nicht ruppig */
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:4px}
+.knopf:focus-visible,.kopf__tel:focus-visible{outline-offset:4px}
+
+/* Laufband: an den Raendern weich auslaufen statt hart abschneiden */
+.laufband{
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 5rem,
+    #000 calc(100% - 5rem),transparent);
+  mask-image:linear-gradient(to right,transparent,#000 5rem,
+    #000 calc(100% - 5rem),transparent);
+}
+@media (max-width:640px){
+  .laufband{-webkit-mask-image:linear-gradient(to right,transparent,#000 2rem,
+    #000 calc(100% - 2rem),transparent);
+    mask-image:linear-gradient(to right,transparent,#000 2rem,
+    #000 calc(100% - 2rem),transparent)}
+}
+
+/* Absaetze schoener umbrechen lassen */
+p,.gross,.buehne__text,.block p,.bewertung__zusatz{text-wrap:pretty}
+
+/* Karten reagieren dezent */
+.block{transition:border-top-color .3s}
+.block:hover{border-top-color:var(--gold)}
+
+/* Preis im Warenkorb-Button leicht abgesetzt */
+.konfig__add b{padding-left:1rem;border-left:1px solid rgba(255,255,255,.28);
+  font-variant-numeric:tabular-nums}
+
+/* Eingabefelder: Uebergang beim Fokus */
+.feld input,.feld select,.feld textarea,.suche input,.konfig__block textarea{
+  transition:border-color .25s}
+
+/* Zwei-Klick-Karte etwas einladender */
+.zweiklick{transition:border-color .3s}
+.zweiklick:hover{border-color:var(--gold-still)}
