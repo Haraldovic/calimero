@@ -190,8 +190,13 @@ Anwalt drüberschauen, das kostet wenig und ist bei einem Shop gut angelegt.
 
 ### Kein Blocker, kann jederzeit nachgereicht werden
 
-- **Fotos.** Die Seite funktioniert ohne. Siehe Kapitel „Fotos einbauen"
-  und „Gerichtefotos".
+- **Weitere Fotos.** Neunzehn Gerichtefotos sind eingebaut. Fehlende
+  Gerichte laufen ohne Bild weiter, die Zeilen bleiben trotzdem bündig.
+  Siehe Kapitel „Gerichtefotos".
+- **041 Pizza Salami** braucht ein neues Foto, auf dem alten war keine
+  Salami zu sehen. **066** und **072** bitte gegenprüfen: bei der Istanbul
+  fehlen die scharfen Peperoni, bei der Frühstück die Spiegeleier.
+- **Ladenfoto.** Der Platz in der Bühne wartet noch, `FOTOS["teller"]`.
 - **Google-Bewertungen.** Abschnitt ist gebaut, erscheint erst mit echten
   Zahlen. Siehe eigenes Kapitel.
 - **Gründungsjahr:** aktuell steht überall „seit über zwanzig Jahren". Ein
@@ -281,6 +286,50 @@ Gericht darin ein Foto hat, damit die Zeilen bündig bleiben.
 Empfohlen: quadratisch, 800 × 800 px, JPG mit etwa 75 % Qualität. Von
 schräg oben, bei Tageslicht, immer gleicher Abstand und gleicher
 Untergrund. Das wirkt hochwertiger als jeder Filter.
+
+### Bestellungen nur während der Öffnungszeiten
+
+Auf ausdrücklichen Wunsch des Wirts: **Außerhalb der Öffnungszeiten und am
+Ruhetag kann keine Bestellung abgeschickt werden, auch keine
+Vorbestellung.** Umgesetzt an drei Stellen, damit es nicht umgangen wird:
+
+1. Ein rotes Band oben auf der Bestellseite mit dem Zeitpunkt der nächsten
+   Öffnung und der Telefonnummer.
+2. Der Absende-Button in der Kasse ist gesperrt und heißt „Zurzeit
+   geschlossen".
+3. Eine harte Prüfung beim Absenden. Falls der Laden schließt, während
+   jemand im Bestellvorgang ist, greift sie trotzdem. Der Zustand wird
+   zusätzlich jede Minute neu geprüft.
+
+Auswählen und in den Warenkorb legen bleibt möglich, der Korb überlebt bis
+zur nächsten Öffnung. Nur das Absenden ist gesperrt.
+
+**Feiertage werden automatisch berechnet**, ohne Liste, die gepflegt werden
+muss. Berechnet wird Ostern nach dem Gaußschen Verfahren, daraus ergeben
+sich Karfreitag, Ostermontag, Christi Himmelfahrt, Pfingstmontag und
+Fronleichnam. Dazu die festen Termine Neujahr, 1. Mai, 3. Oktober sowie
+25. und 26. Dezember. Das sind die gesetzlichen Feiertage in Hessen.
+
+An Feiertagen gelten die Sonntagszeiten, also 15:00 bis 23:00 Uhr, so wie
+es auf der gedruckten Karte steht. **Das gilt auch, wenn ein Feiertag auf
+einen Montag fällt**, etwa Ostermontag oder Pfingstmontag. Bitte einmal
+beim Wirt gegenprüfen: Wenn er an einem Feiertagsmontag trotzdem zu hat,
+muss diese Regel geändert werden.
+
+Getestet mit neun Zeitpunkten, darunter Ruhetag, Mittagspause, nach
+Ladenschluss, Tag der Deutschen Einheit und Ostermontag 2027. Alle korrekt.
+
+### Annahmeschluss vor Ladenschluss
+
+In `menu_data.py`:
+
+```python
+ANNAHMESCHLUSS = 0   # Minuten vor Ladenschluss
+```
+
+Steht auf 0, also bis zur letzten Minute. Wenn der Wirt zwanzig Minuten
+vor Schluss keine Bestellungen mehr will, hier 20 eintragen. Dann ist ab
+22:40 Uhr Schluss.
 
 ### Schutz vor Fake- und Doppelbestellungen
 

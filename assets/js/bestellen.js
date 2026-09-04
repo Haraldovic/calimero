@@ -29,6 +29,15 @@
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
     });
   }
+  /* Zwei WebP-Groessen plus ein JPEG als Sicherheitsnetz */
+  function bildTag(pfad, alt, sizes) {
+    var basis = pfad.replace(/\.[a-z]+$/i, "");
+    var web = basis + "-450.webp 450w, " + basis + "-900.webp 900w";
+    return '<picture><source type="image/webp" srcset="' + web + '" sizes="' + sizes + '">' +
+      '<img src="' + basis + '.jpg" alt="' + esc(alt) + '" width="900" height="900" ' +
+      'loading="lazy" decoding="async"></picture>';
+  }
+
   function normal(s) {
     return String(s).toLowerCase().replace(/ä/g, "ae").replace(/ö/g, "oe")
       .replace(/ü/g, "ue").replace(/ß/g, "ss").replace(/[„“"']/g, "");
@@ -140,10 +149,8 @@
       var preise = Object.keys(a.preise).map(function (g) { return a.preise[g]; });
       var ab = Math.min.apply(null, preise);
       var mehrere = preise.length > 1;
-      var bild = a.bild
-        ? '<span class="best-artikel__bild"><img src="' + esc(a.bild) + '" alt="" ' +
-          'loading="lazy" width="58" height="58"></span>'
-        : "";
+      var bild = a.bild ? '<span class="best-artikel__bild">' +
+        bildTag(a.bild, a.name, "66px") + "</span>" : "";
       return '<button type="button" class="best-artikel" data-id="' + a.id + '">' +
         bild +
         '<span class="best-artikel__mitte">' +
@@ -209,8 +216,8 @@
     var html = '<div class="konfig">';
     html += '<button class="overlay__zu" type="button" data-zu aria-label="Schließen">×</button>';
     if (a.bild) {
-      html += '<div class="konfig__bild"><img src="' + esc(a.bild) + '" alt="' +
-              esc(a.name) + '"></div>';
+      html += '<div class="konfig__bild">' +
+              bildTag(a.bild, a.name, "(max-width:720px) 100vw, 44rem") + "</div>";
     }
     html += "<h2>" + esc(a.nr) + " " + esc(a.name) + "</h2>";
     if (a.desc) html += '<p class="konfig__desc">' + esc(a.desc) + "</p>";
@@ -423,13 +430,15 @@
     html += "<h2>Bestellung abschließen</h2>";
 
     var Z = window.CalimeroZeit;
+    var zu = Z && !Z.offen();
     if (Z) {
-      var spaeter = Z.naechsteOeffnung();
-      if (spaeter) {
-        html += '<div class="hinweis hinweis--warnung"><p><strong>Wir haben gerade ' +
-          "geschlossen.</strong> Sie können Ihre Bestellung trotzdem abschicken, wir " +
-          "bearbeiten sie dann " + esc(spaeter) + ". Eine Bestätigung erhalten Sie " +
-          "erst, wenn wir wieder da sind.</p></div>";
+      if (zu) {
+        var spaeter = Z.naechsteOeffnung();
+        html += '<div class="hinweis hinweis--warnung"><p><strong>Wir haben ' +
+          "geschlossen.</strong> Bestellungen nehmen wir nur während der " +
+          "Öffnungszeiten entgegen, auch keine Vorbestellungen." +
+          (spaeter ? " Sie können uns wieder " + esc(spaeter) + " bestellen." : "") +
+          "</p></div>";
       }
       if (Z.mittagsangebot()) {
         html += '<div class="hinweis"><p><strong>Mittagsangebot läuft gerade.</strong> ' +
@@ -483,8 +492,10 @@
     html += '<p class="kasse__fehler" id="kasse-fehler" hidden></p>';
     html += '<div class="konfig__fuss konfig__fuss--statisch">' +
       '<button class="knopf knopf--rand" type="button" id="zurueck-korb">Zurück</button>' +
-      '<button class="knopf knopf--dunkel" type="button" id="absenden">zahlungspflichtig bestellen</button>' +
-      "</div></div>";
+      '<button class="knopf knopf--dunkel" type="button" id="absenden"' +
+      (zu ? " disabled" : "") + ">" +
+      (zu ? "Zurzeit geschlossen" : "zahlungspflichtig bestellen") +
+      "</button></div></div>";
 
     overlayAuf(html);
 
@@ -535,6 +546,19 @@
                ? "EC-Karte" : "bar",
       notiz: document.getElementById("f-notiz").value.trim()
     };
+
+    var Zt = window.CalimeroZeit;
+    if (Zt && !Zt.offen()) {
+      var f0 = document.getElementById("kasse-fehler");
+      var wann = Zt.naechsteOeffnung();
+      f0.hidden = false;
+      f0.textContent = "Wir haben geschlossen. Bestellungen sind nur während der " +
+        "Öffnungszeiten möglich" + (wann ? ", wieder " + wann : "") + ".";
+      f0.scrollIntoView({ block: "center" });
+      var btn = document.getElementById("absenden");
+      if (btn) { btn.disabled = true; btn.textContent = "Zurzeit geschlossen"; }
+      return;
+    }
 
     var fehler = [];
     var sperre = bestellsperre();
@@ -695,6 +719,29 @@
     }
   }
 
+  /* ---------------------------------------------------- Geschlossen-Zustand
+     Wird beim Laden und danach jede Minute geprueft. Faellt die Schliesszeit
+     mitten in den Bestellvorgang, wird auch der Kassen-Button gesperrt. */
+  function schliessstandPruefen() {
+    var Z = window.CalimeroZeit;
+    if (!Z) return;
+    var zu = !Z.offen();
+    document.body.setAttribute("data-laden", zu ? "zu" : "offen");
+    var kasten = document.getElementById("geschlossen-hinweis");
+    if (kasten) {
+      kasten.hidden = !zu;
+      var t = kasten.querySelector("[data-geschlossen-text]");
+      if (t && zu) {
+        var wann = Z.naechsteOeffnung();
+        t.textContent = wann
+          ? "Bestellungen sind erst wieder " + wann + " möglich."
+          : "Bestellungen sind zurzeit nicht möglich.";
+      }
+    }
+    var btn = document.getElementById("absenden");
+    if (btn && zu) { btn.disabled = true; btn.textContent = "Zurzeit geschlossen"; }
+  }
+
   /* ---------------------------------------------------- Start */
   function start(daten) {
     K = daten;
@@ -711,6 +758,8 @@
       el.suche.addEventListener("input", listeZeichnen);
     }
     el.leiste.addEventListener("click", korbOeffnen);
+    schliessstandPruefen();
+    setInterval(schliessstandPruefen, 60000);
   }
 
   fetch("menu.json", { cache: "no-cache" })

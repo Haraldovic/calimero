@@ -9,7 +9,7 @@ from menu_data import (SALATE, PASTA, PIZZA, EXTRAS, ZUSATZSTOFFE, ALLERGENE,
                        GROESSEN, EXTRA_ZUTATEN, EXTRA_PREIS, ZUSATZOPTIONEN, WEGLASSEN,
                        GETRAENKE, GETRAENKE_PLATZHALTER, MINDESTBESTELLWERT, LIEFERGEBUEHR,
                        SONDERGROESSEN, ARTIKEL_HINWEIS,
-                       BESTELL_PAUSE, MINDESTVERWEILDAUER, BILDER)
+                       BESTELL_PAUSE, MINDESTVERWEILDAUER, BILDER, ANNAHMESCHLUSS, SCHAUFENSTER)
 import json
 
 HIER = os.path.dirname(os.path.abspath(__file__))
@@ -95,6 +95,53 @@ def foto(schluessel, klasse="foto--breit", mit_text=True):
 
 def hat_fotos(*schluessel):
     return any(FOTOS.get(k) for k in schluessel)
+
+
+def bild_tag(datei, alt, sizes, klasse="", eager=False):
+    """Zwei WebP-Groessen fuer alle modernen Browser, ein JPEG als Sicherheitsnetz.
+    Bewusst nur drei Dateien je Gericht, damit der Ordner ueberschaubar bleibt."""
+    basis = datei.rsplit(".", 1)[0]
+    p = "assets/img/gerichte/"
+    web = f"{p}{basis}-450.webp 450w, {p}{basis}-900.webp 900w"
+    laden = "eager" if eager else "lazy"
+    prio = ' fetchpriority="high"' if eager else ""
+    k = f' class="{klasse}"' if klasse else ""
+    return (f'<picture{k}>'
+            f'<source type="image/webp" srcset="{web}" sizes="{sizes}">'
+            f'<img src="{p}{basis}.jpg" alt="{alt}" width="900" height="900" '
+            f'loading="{laden}" decoding="async"{prio}>'
+            f'</picture>')
+
+
+def preis_von(nr):
+    for liste in (SALATE, PASTA, PIZZA):
+        for g in liste:
+            if g[0] == nr:
+                return g[1], g[4]
+    return "", ""
+
+
+def schaufenster():
+    """Grosse Bildflaeche auf der Startseite. Jede Kachel fuehrt in die
+    passende Kategorie der Bestellseite."""
+    kacheln = []
+    for nr in SCHAUFENSTER:
+        datei = BILDER.get(nr)
+        if not datei:
+            continue
+        name, preis = preis_von(nr)
+        kat = "pizza" if nr >= "040" else ("pasta" if nr >= "012" else "salate")
+        kacheln.append(
+            f'<a class="schaufenster__kachel" href="bestellen.html#{kat}">'
+            '<span class="schaufenster__bild">'
+            + bild_tag(datei, name, "(max-width:520px) 100vw, (max-width:900px) 50vw, 33vw",
+                       eager=(nr == SCHAUFENSTER[0]))
+            + '</span>'
+            f'<span class="schaufenster__fuss"><span class="schaufenster__name">{name}</span>'
+            f'<span class="schaufenster__preis">ab {preis}&nbsp;€</span></span></a>')
+    if not kacheln:
+        return ""
+    return ('<div class="schaufenster">' + "".join(kacheln) + "</div>")
 
 
 def laufband():
@@ -269,7 +316,8 @@ def fuss(extra_js=""):
     for pfad in ([extra_js] if extra_js else []):
         weitere += (f'\n<script src="{pfad}?v={fingerabdruck(pfad)}" defer></script>')
     zeilen = "\n        ".join(
-        f'<li data-tag="{tage}"><span class="zeiten__tag">{tag}</span>'
+        f'<li data-tag="{tage}"><span class="zeiten__tag">{tag}'
+        f'<b class="zeiten__heute">Heute</b></span>'
         f'<span class="zeiten__zeit">{zeit}</span></li>'
         for tage, tag, zeit in ZEITEN_TEXT)
     return f"""</main>
@@ -293,9 +341,11 @@ def fuss(extra_js=""):
       </div>
       <div>
         <h2>Öffnungszeiten</h2>
-        <ul class="zeiten zeiten--stapel">
+        <ul class="zeiten zeiten--stapel zeiten--kraeftig">
         {zeilen}
         </ul>
+        <p class="fuss__mittag">Mittagstisch Dienstag bis Freitag,
+        11:30 – 14:30 Uhr, für 7,50&nbsp;€</p>
       </div>
       <div>
         <h2>Adresse</h2>
@@ -346,8 +396,8 @@ def gericht_html(g, spalte=False):
     nr, name, zutaten, code, p1, p2 = g
     bild = ""
     if BILDER.get(nr):
-        bild = (f'  <span class="gericht__bild"><img src="assets/img/gerichte/{BILDER[nr]}"'
-                f' alt="{name}" loading="lazy" width="72" height="72"></span>')
+        bild = ('  <span class="gericht__bild">'
+                + bild_tag(BILDER[nr], name, "72px") + '</span>')
     elif spalte:
         bild = '  <span class="gericht__bild gericht__bild--leer" aria-hidden="true"></span>'
 
@@ -355,10 +405,10 @@ def gericht_html(g, spalte=False):
     zeilen = [f'<li class="gericht" id="nr-{nr}">']
     if bild:
         zeilen.append(bild)
-    zeilen.append(f'  <span class="gericht__nr">{nr}</span>')
     zeilen.append('  <span class="gericht__mitte">')
     zeilen.append('    <span class="gericht__zeile">')
-    zeilen.append(f'      <span class="gericht__name">{name}</span>')
+    zeilen.append(f'      <span class="gericht__name">'
+                  f'<i class="gericht__nr">{nr}</i>{name}</span>')
     zeilen.append('      <span class="gericht__fuehrung" aria-hidden="true"></span>')
     zeilen.append(f'      <span class="gericht__preise">{preise}</span>')
     zeilen.append('    </span>')
@@ -511,7 +561,8 @@ def seite_speisekarte():
 # ---------------------------------------------------------------- Startseite
 def seite_start():
     zeilen = "\n        ".join(
-        f'<li data-tag="{tage}"><span class="zeiten__tag">{tag}</span>'
+        f'<li data-tag="{tage}"><span class="zeiten__tag">{tag}'
+        f'<b class="zeiten__heute">Heute</b></span>'
         f'<span class="zeiten__zeit">{zeit}</span></li>'
         for tage, tag, zeit in ZEITEN_TEXT)
     gebiete = "\n        ".join(f"<li>{g}</li>" for g in GEBIETE)
@@ -527,25 +578,7 @@ def seite_start():
 
     bewertungen = bewertungsblock()
     band = laufband()
-
-    galerie = ""
-    if hat_fotos("pizza63", "pasta", "salat", "laden", "ofen"):
-        kacheln = "\n      ".join(filter(None, [
-            foto("pizza63", "foto--quadrat"),
-            foto("pasta", "foto--quadrat"),
-            foto("salat", "foto--quadrat"),
-            foto("ofen", "foto--quadrat"),
-        ]))
-        galerie = f"""<section class="abschnitt">
-  <div class="huelle">
-    <div class="abschnitt__kopf">
-      <h2>Aus unserer Küche</h2>
-    </div>
-    <div class="galerie">
-      {kacheln}
-    </div>
-  </div>
-</section>"""
+    schau = schaufenster()
 
     schema = f"""<script type="application/ld+json">
 {{"@context":"https://schema.org","@type":"Restaurant",
@@ -591,96 +624,46 @@ def seite_start():
 
 {band}
 
-<section class="abschnitt">
-  <div class="huelle">
-    <span class="abschnitt__nr" aria-hidden="true">01</span>
-    <div class="abschnitt__kopf" data-reveal>
-      <p class="marke">Die Hauspizza</p>
-      <h2>Benannt nach dem Küken auf dem Schild.</h2>
-      <p>Eine Pizza trägt bei uns den Namen des Ladens. Sie steht seit Jahren
-      unverändert auf der Karte, und sie ist der Grund, warum viele überhaupt
-      zum ersten Mal bei uns bestellt haben.</p>
-    </div>
-
-    <div class="empfehlung" data-reveal="100">
-      <p class="empfehlung__nr">63</p>
-      <div>
-        <p class="marke" style="margin-bottom:.8rem">Nr. 63 auf der Karte</p>
-        <h3>Pizza Calimero</h3>
-        <p>Unsere Hauspizza, benannt nach dem Küken auf dem Schild. Tomatensauce,
-        Käse, Shrimps, Sardellen, frische Pilze, Zwiebeln, Kapern und Oliven.</p>
-        <p style="font-family:var(--serif);font-size:1.15rem;color:var(--tinte)">
-        9,50&nbsp;€ <span style="color:var(--leise);font-size:.8em">ø&nbsp;26&nbsp;cm</span>
-        &nbsp;&middot;&nbsp; 13,00&nbsp;€
-        <span style="color:var(--leise);font-size:.8em">ø&nbsp;30&nbsp;cm</span></p>
-        <p style="margin-top:1.6rem">
-        <a class="knopf knopf--linie" href="speisekarte.html"><span>Ganze Karte ansehen</span></a></p>
-      </div>
-    </div>
+<section class="abschnitt abschnitt--knapp">
+  <div class="huelle" data-reveal>
+    <p class="marke">Aus unserer Küche</p>
   </div>
+  {schau}
 </section>
 
 <section class="mittag">
   <div class="huelle">
     <div class="mittag__block" data-reveal>
-    <p class="marke" style="color:var(--gold-hell)">Dienstag bis Freitag</p>
-    <p class="mittag__preis">7,50<span>€</span></p>
-    <h2>Der Mittagstisch.</h2>
-    <p>Von <strong>11:30 bis 14:30 Uhr</strong> eine Pizza, ein Nudelgericht oder einen
-    Salat Ihrer Wahl in normaler Größe. Ausgenommen sind die Nummern 6, 30, 38 und 51.</p>
+      <p class="marke" style="color:var(--gold-hell)">Dienstag bis Freitag</p>
+      <p class="mittag__preis">7,50<span>€</span></p>
+      <h2>Der Mittagstisch.</h2>
+      <p>Von <strong>11:30 bis 14:30 Uhr</strong> eine Pizza, ein Nudelgericht oder einen
+      Salat Ihrer Wahl in normaler Größe. Ausgenommen sind die Nummern 6, 30, 38 und 51.</p>
     </div>
   </div>
 </section>
+
+{bewertungen}
 
 <section class="abschnitt">
   <div class="huelle">
-    <span class="abschnitt__nr" aria-hidden="true">02</span>
-    <div class="abschnitt__kopf" data-reveal>
-      <p class="marke">Die Karte</p>
-      <h2>Drei Kapitel, fünfundsiebzig Gerichte.</h2>
-    </div>
-    <div class="raster raster--drei" data-reveal="100">
-      <div class="block">
-        <h3>Pizza</h3>
-        <p>Siebenunddreißig Sorten, von der Margarita für 7,50&nbsp;€ bis zur
-        Familienpizza mit vierzig Zentimetern. Dazu Calzone, Pizzabrot und Bruschetta.</p>
-      </div>
-      <div class="block">
-        <h3>Pasta</h3>
-        <p>Spaghetti, Rigatoni, Tortellini, Tagliatelle, Gnocchi und Lasagne,
-        auf Wunsch mit Käse überbacken.</p>
-      </div>
-      <div class="block">
-        <h3>Salate</h3>
-        <p>Zehn Salate in zwei Größen, standardmäßig mit Joghurt-Dressing,
-        auf Wunsch mit Essig und Öl.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-{galerie}
-{bewertungen}
-
-<section class="abschnitt abschnitt--tief">
-  <div class="huelle">
     <div class="raster raster--zwei">
       <div data-reveal>
-        <span class="abschnitt__nr" aria-hidden="true" style="position:static;display:block;
-          font-size:clamp(4rem,9vw,7rem);opacity:.16;margin-bottom:-.25em">03</span>
         <p class="marke">Lieferung</p>
         <h2>In Hanau frei Haus.</h2>
-        <p style="color:var(--still)">Innerhalb von Hanau liefern wir ohne Liefergebühr.
-        Der Mindestbestellwert beträgt 11,00&nbsp;€.</p>
+        <p style="color:var(--still)">Innerhalb von Hanau ohne Liefergebühr,
+        ab 11,00&nbsp;€ Bestellwert.</p>
         <ul class="gebiete" style="margin-top:1.4rem">
         {gebiete}
         </ul>
       </div>
       <div data-reveal="120">
         <p class="marke">Öffnungszeiten</p>
-        <ul class="zeiten">
+        <ul class="zeiten zeiten--kraeftig">
         {zeilen}
         </ul>
+        <p style="margin-top:1rem;color:var(--still);font-size:.95rem">
+        Mittagstisch Dienstag bis Freitag, 11:30 – 14:30 Uhr, für 7,50&nbsp;€</p>
         <p style="margin-top:1.4rem">
           <span class="status" data-status><span class="status__punkt"></span>
           <span data-status-text></span></span>
@@ -690,13 +673,11 @@ def seite_start():
   </div>
 </section>
 
-<section class="abschnitt">
+<section class="abschnitt abschnitt--tief">
   <div class="huelle">
-    <span class="abschnitt__nr" aria-hidden="true">04</span>
     <div class="abschnitt__kopf" data-reveal>
       <p class="marke">Anfahrt</p>
-      <h2>So finden Sie uns.</h2>
-      <p>{STRASSE}, {PLZ_ORT}. Mitten in der Innenstadt, wenige Schritte vom Marktplatz.</p>
+      <h2>{STRASSE}, {PLZ_ORT}</h2>
     </div>
     <div class="zweiklick" data-karte="{MAPS}" data-reveal="80">
       <div class="zweiklick__hinweis">
@@ -833,7 +814,8 @@ def seite_ueber():
 # ---------------------------------------------------------------- Kontakt
 def seite_kontakt():
     zeilen = "\n        ".join(
-        f'<li data-tag="{tage}"><span class="zeiten__tag">{tag}</span>'
+        f'<li data-tag="{tage}"><span class="zeiten__tag">{tag}'
+        f'<b class="zeiten__heute">Heute</b></span>'
         f'<span class="zeiten__zeit">{zeit}</span></li>'
         for tage, tag, zeit in ZEITEN_TEXT)
     gebiete = "\n        ".join(f"<li>{g}</li>" for g in GEBIETE)
@@ -864,9 +846,11 @@ def seite_kontakt():
       </div>
       <div class="block">
         <h2>Öffnungszeiten</h2>
-        <ul class="zeiten">
+        <ul class="zeiten zeiten--kraeftig">
         {zeilen}
         </ul>
+        <p style="margin-top:1rem;font-size:.94rem">Mittagstisch Dienstag bis Freitag,
+        11:30 – 14:30 Uhr, für 7,50&nbsp;€</p>
       </div>
       <div class="block">
         <h2>Lieferung</h2>
@@ -1238,6 +1222,14 @@ def seite_bestellen():
   </div>
 </section>
 
+<div class="geschlossen" id="geschlossen-hinweis" hidden>
+  <div class="huelle geschlossen__innen">
+    <strong>Wir haben gerade geschlossen.</strong>
+    <span data-geschlossen-text></span>
+    <a href="tel:{TEL_ROH}">{TEL_ZEIG}</a>
+  </div>
+</div>
+
 <div class="best-nav">
   <div class="huelle best-nav__innen">
     <div id="kat-tabs" class="karte-nav__gruppe" role="group" aria-label="Kategorie wählen"></div>
@@ -1274,7 +1266,8 @@ def seite_bestellen():
 </div>
 """
     extra = ('<script>window.CALIMERO_TEL="' + TEL_ROH + '";'
-             'window.CALIMERO_TEL_ANZEIGE="' + TEL_ZEIG + '";</script>\n')
+             'window.CALIMERO_TEL_ANZEIGE="' + TEL_ZEIG + '";'
+             'window.CALIMERO_ANNAHMESCHLUSS=' + str(ANNAHMESCHLUSS) + ';</script>\n')
     seite = (kopf("Online bestellen | Pizzeria Calimero Hanau",
                   "Pizza, Pasta und Salate der Pizzeria Calimero online zusammenstellen und "
                   "direkt bestellen. Abholung oder Lieferung in Hanau, Zahlung bei Übergabe.",

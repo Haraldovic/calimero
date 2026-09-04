@@ -135,18 +135,86 @@
   function berlinJetzt() {
     try {
       var teile = new Intl.DateTimeFormat("de-DE", {
-        timeZone: "Europe/Berlin", weekday: "short", hour: "2-digit",
+        timeZone: "Europe/Berlin", weekday: "short", year: "numeric",
+        month: "2-digit", day: "2-digit", hour: "2-digit",
         minute: "2-digit", hour12: false
       }).formatToParts(new Date());
       var map = {};
       teile.forEach(function (t) { map[t.type] = t.value; });
       var kuerzel = { "So": 0, "Mo": 1, "Di": 2, "Mi": 3, "Do": 4, "Fr": 5, "Sa": 6 };
       var tag = kuerzel[map.weekday.replace(".", "").slice(0, 2)];
-      return { tag: tag, minute: parseInt(map.hour, 10) * 60 + parseInt(map.minute, 10) };
+      return {
+        tag: tag,
+        minute: parseInt(map.hour, 10) * 60 + parseInt(map.minute, 10),
+        datum: map.year + "-" + map.month + "-" + map.day
+      };
     } catch (e) {
       var d = new Date();
-      return { tag: d.getDay(), minute: d.getHours() * 60 + d.getMinutes() };
+      var z = function (n) { return (n < 10 ? "0" : "") + n; };
+      return {
+        tag: d.getDay(),
+        minute: d.getHours() * 60 + d.getMinutes(),
+        datum: d.getFullYear() + "-" + z(d.getMonth() + 1) + "-" + z(d.getDate())
+      };
     }
+  }
+
+  /* ------------------------------------------------------------------
+     Gesetzliche Feiertage in Hessen, jahresunabhaengig berechnet.
+     Laut gedruckter Karte gelten an Feiertagen die Sonntagszeiten,
+     also 15:00 bis 23:00 Uhr, auch wenn der Feiertag auf einen
+     Montag faellt. Keine Liste, die gepflegt werden muss.
+  ------------------------------------------------------------------ */
+  var feiertagCache = {};
+
+  function ostersonntag(jahr) {
+    var a = jahr % 19, b = Math.floor(jahr / 100), c = jahr % 100;
+    var d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25);
+    var g = Math.floor((b - f + 1) / 3);
+    var h = (19 * a + b - d - g + 15) % 30;
+    var i = Math.floor(c / 4), k = c % 4;
+    var l = (32 + 2 * e + 2 * i - h - k) % 7;
+    var m = Math.floor((a + 11 * h + 22 * l) / 451);
+    var monat = Math.floor((h + l - 7 * m + 114) / 31);
+    var tag = ((h + l - 7 * m + 114) % 31) + 1;
+    return new Date(Date.UTC(jahr, monat - 1, tag));
+  }
+
+  function feiertage(jahr) {
+    if (feiertagCache[jahr]) return feiertagCache[jahr];
+    function iso(d) {
+      var z = function (n) { return (n < 10 ? "0" : "") + n; };
+      return d.getUTCFullYear() + "-" + z(d.getUTCMonth() + 1) + "-" + z(d.getUTCDate());
+    }
+    function plus(d, tage) {
+      return new Date(d.getTime() + tage * 86400000);
+    }
+    var o = ostersonntag(jahr);
+    var liste = [
+      jahr + "-01-01",              /* Neujahr */
+      iso(plus(o, -2)),             /* Karfreitag */
+      iso(plus(o, 1)),              /* Ostermontag */
+      jahr + "-05-01",              /* Tag der Arbeit */
+      iso(plus(o, 39)),             /* Christi Himmelfahrt */
+      iso(plus(o, 50)),             /* Pfingstmontag */
+      iso(plus(o, 60)),             /* Fronleichnam, in Hessen gesetzlich */
+      jahr + "-10-03",              /* Tag der Deutschen Einheit */
+      jahr + "-12-25",
+      jahr + "-12-26"
+    ];
+    feiertagCache[jahr] = liste;
+    return liste;
+  }
+
+  function istFeiertag(datum) {
+    var jahr = parseInt(datum.slice(0, 4), 10);
+    return feiertage(jahr).indexOf(datum) > -1;
+  }
+
+  /* Zeiten des heutigen Tages, Feiertage zaehlen als Sonntag */
+  function zeitenHeute(jetzt) {
+    if (istFeiertag(jetzt.datum)) return ZEITEN[0];
+    return ZEITEN[jetzt.tag] || [];
   }
 
   function hhmm(m) {
@@ -154,9 +222,20 @@
     return (h < 10 ? "0" : "") + h + ":" + (min < 10 ? "0" : "") + min;
   }
 
+  /* Zeiten fuer den Tag in k Tagen, Feiertage beruecksichtigt */
+  function naechsterTag(jetzt, k) {
+    var d = new Date(jetzt.datum + "T12:00:00Z");
+    d = new Date(d.getTime() + k * 86400000);
+    var z = function (n) { return (n < 10 ? "0" : "") + n; };
+    var datum = d.getUTCFullYear() + "-" + z(d.getUTCMonth() + 1) + "-" + z(d.getUTCDate());
+    var wochentag = (jetzt.tag + k) % 7;
+    var zeiten = istFeiertag(datum) ? ZEITEN[0] : (ZEITEN[wochentag] || []);
+    return { datum: datum, tag: wochentag, zeiten: zeiten };
+  }
+
   function statusText() {
     var jetzt = berlinJetzt();
-    var heute = ZEITEN[jetzt.tag] || [];
+    var heute = zeitenHeute(jetzt);
     for (var i = 0; i < heute.length; i++) {
       if (jetzt.minute >= heute[i][0] && jetzt.minute < heute[i][1]) {
         return { offen: true, text: "Jetzt geöffnet bis " + hhmm(heute[i][1]) + " Uhr" };
@@ -167,11 +246,11 @@
         return { offen: false, text: "Heute wieder ab " + hhmm(heute[j][0]) + " Uhr" };
       }
     }
-    for (var k = 1; k <= 7; k++) {
+    for (var k = 1; k <= 8; k++) {
       var t = (jetzt.tag + k) % 7;
-      var z = ZEITEN[t] || [];
-      if (z.length) {
-        var wann = (k === 1 ? "Morgen" : TAGE[t]) + " ab " + hhmm(z[0][0]) + " Uhr";
+      var z = naechsterTag(jetzt, k);
+      if (z.zeiten.length) {
+        var wann = (k === 1 ? "Morgen" : TAGE[t]) + " ab " + hhmm(z.zeiten[0][0]) + " Uhr";
         return { offen: false, text: "Geschlossen, " + wann.charAt(0).toLowerCase() + wann.slice(1) };
       }
     }
@@ -187,21 +266,33 @@
     /* Laeuft gerade das Mittagsangebot? Dienstag bis Freitag 11:30 - 14:30 */
     mittagsangebot: function () {
       var n = berlinJetzt();
+      if (istFeiertag(n.datum)) return false;
       return n.tag >= 2 && n.tag <= 5 && n.minute >= 690 && n.minute < 870;
     },
     /* Naechste Oeffnung als lesbarer Text, oder null wenn gerade offen */
+    istFeiertag: istFeiertag,
+    /* true, wenn gerade bestellt werden darf */
+    offen: function () {
+      var n = berlinJetzt(), heute = zeitenHeute(n);
+      for (var i = 0; i < heute.length; i++) {
+        if (n.minute >= heute[i][0] && n.minute < heute[i][1] - (window.CALIMERO_ANNAHMESCHLUSS || 0)) {
+          return true;
+        }
+      }
+      return false;
+    },
     naechsteOeffnung: function () {
-      var n = berlinJetzt(), heute = ZEITEN[n.tag] || [], i;
+      var n = berlinJetzt(), heute = zeitenHeute(n), i;
       for (i = 0; i < heute.length; i++) {
         if (n.minute >= heute[i][0] && n.minute < heute[i][1]) return null;
       }
       for (i = 0; i < heute.length; i++) {
         if (n.minute < heute[i][0]) return "heute ab " + hhmm(heute[i][0]) + " Uhr";
       }
-      for (var k = 1; k <= 7; k++) {
-        var t = (n.tag + k) % 7, z = ZEITEN[t] || [];
-        if (z.length) {
-          return (k === 1 ? "morgen" : "am " + TAGE[t]) + " ab " + hhmm(z[0][0]) + " Uhr";
+      for (var k = 1; k <= 8; k++) {
+        var n2 = naechsterTag(n, k);
+        if (n2.zeiten.length) {
+          return (k === 1 ? "morgen" : "am " + TAGE[n2.tag]) + " ab " + hhmm(n2.zeiten[0][0]) + " Uhr";
         }
       }
       return null;

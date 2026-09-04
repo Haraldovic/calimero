@@ -180,6 +180,9 @@ ARTIKEL_HINWEIS = {
 # --- Schutz vor Fake- und Doppelbestellungen -------------------------
 # Bewusst ohne Tageslimit und ohne Feiertagsliste, damit nichts gepflegt
 # werden muss und an starken Tagen niemand ausgesperrt wird.
+ANNAHMESCHLUSS = 0       # Minuten vor Ladenschluss, ab denen keine Bestellung mehr
+                         # angenommen wird. 0 = bis zur letzten Minute.
+                         # Beispiel: 20 bedeutet, ab 22:40 geht nichts mehr.
 BESTELL_PAUSE = 90       # Sekunden zwischen zwei Bestellungen, gegen Doppelklicks
 MINDESTVERWEILDAUER = 8  # Sekunden, die zwischen Seitenaufruf und Absenden liegen
                          # muessen. Menschen brauchen laenger, Skripte nicht.
@@ -190,8 +193,27 @@ MINDESTVERWEILDAUER = 8  # Sekunden, die zwischen Seitenaufruf und Absenden lieg
 # Gerichte ohne Eintrag erscheinen einfach ohne Bild, das faellt nicht auf.
 # Empfohlen: quadratisch, 800 x 800 px, JPG mit etwa 75 Prozent.
 BILDER = {
-    # "040": "pizza-margarita.jpg",
-    # "063": "pizza-calimero.jpg",
-    # "013": "spaghetti-bolognese.jpg",
-    # "005": "salat-caprese.jpg",
+    "001": "001-gruener-salat.jpg",
+    "002": "002-italienischer-salat.jpg",
+    "004": "004-capricciosa-salat.jpg",
+    "014": "014-spaghetti-carbonara.jpg",
+    "016": "016-spaghetti-con-tonno.jpg",
+    "017": "017-spaghetti-marinara.jpg",
+    "018": "018-rigatoni-broccoli.jpg",
+    "019": "019-rigatoni-al-forno.jpg",
+    "020": "020-rigatoni-chef.jpg",
+    "025": "025-tortellini-chef.jpg",
+    "029": "029-tagliatelle-chef.jpg",
+    "040": "040-pizza-margarita.jpg",
+    "044": "044-pizza-mix.jpg",
+    "050": "050-pizza-tonno.jpg",
+    "055": "055-pizza-mozzarella.jpg",
+    "060": "060-pizza-calabria.jpg",
+    "066": "066-pizza-istanbul.jpg",
+    "070": "070-pizza-spezial.jpg",
+    "073": "073-pizza-rucola.jpg",
 }
+
+# Reihenfolge der Bilder im Schaufenster auf der Startseite.
+# Bewusst gemischt, damit nicht drei aehnliche Pizzen nebeneinander liegen.
+SCHAUFENSTER = ["073", "025", "002", "060", "019", "040"]

@@ -30,9 +30,13 @@
   --linie-stark:rgba(23,21,18,.24);
 
   /* Didone fuer die grossen Momente, Palatino fuer den Rest */
+  /* Didone zuerst, danach bewusst Georgia statt Times New Roman.
+     Times bricht bei grossen Graden optisch zusammen, Georgia nicht.
+     Damit sieht die Seite auf Windows anders aus als auf dem Mac, aber
+     in jedem Fall ordentlich. */
   --display:Didot,"Didot LT STD","Bodoni 72","Bodoni MT","Playfair Display",
-            "Hoefler Text","Times New Roman",serif;
-  --serif:Palatino,"Palatino Linotype","Book Antiqua","Iowan Old Style",Georgia,serif;
+            "Hoefler Text",Constantia,"Iowan Old Style",Georgia,serif;
+  --serif:Palatino,"Palatino Linotype","Book Antiqua","Iowan Old Style",Constantia,Georgia,serif;
   --sans:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
 
   --breite:1280px;
@@ -386,9 +390,10 @@ p{margin:0 0 1.1em;max-width:64ch}
   align-self:center}
 .gericht__bild img{width:100%;height:100%;object-fit:cover}
 .gericht__bild--leer{background:transparent}
-.gericht__nr{font-family:var(--display);font-weight:700;font-size:1.05rem;color:var(--gold);
-  flex:none;min-width:2.6rem;font-variant-numeric:tabular-nums;letter-spacing:.02em;
-  padding-top:.1rem}
+.gericht__nr{font-style:normal;display:inline-block;min-width:3.1rem;
+  font-family:var(--display);font-weight:700;font-size:1.02rem;color:var(--gold);
+  font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.gericht__name{text-wrap:pretty}
 .gericht__mitte{flex:1 1 auto;min-width:0}
 .gericht__name{font-family:var(--serif);font-weight:700;font-size:1.16rem;display:block;
   color:var(--tinte);overflow-wrap:anywhere;letter-spacing:-.005em}
@@ -704,8 +709,13 @@ body[data-seite="bestellen"] .consent{bottom:1rem}
 @media (max-width:520px){
   .gericht{gap:.8rem;padding:.95rem 0}
   .gericht__bild{width:56px;height:56px}
-  .gericht__nr{min-width:2.2rem;font-size:.98rem}
-  .gericht__name{font-size:1.04rem}
+  /* Auf schmalen Displays steht die Nummer als kleines Label ueber dem
+     Namen, damit Name und Preis nebeneinander in eine Zeile passen. */
+  .gericht__nr{display:block;min-width:0;font-family:var(--sans);font-size:.66rem;
+    font-weight:700;letter-spacing:.18em;margin-bottom:.15rem}
+  .gericht__name{font-size:1.03rem}
+  .gericht__zeile{align-items:flex-end}
+  .gericht__fuehrung{transform:translateY(-.35em)}
   .gericht__preise{gap:.7rem;font-size:.97rem}
   .gericht__preise span{min-width:0}
   .gericht__zeile{gap:.5rem}
@@ -821,3 +831,60 @@ p,.gross,.buehne__text,.block p,.bewertung__zusatz{text-wrap:pretty}
 /* Zwei-Klick-Karte etwas einladender */
 .zweiklick{transition:border-color .3s}
 .zweiklick:hover{border-color:var(--gold-still)}
+
+/* ---------------- Laden geschlossen ---------------- */
+.geschlossen{background:var(--rot);color:#fff;padding-block:.95rem}
+.geschlossen[hidden]{display:none}
+.geschlossen__innen{display:flex;flex-wrap:wrap;align-items:baseline;gap:.4rem 1rem;
+  font-size:.93rem}
+.geschlossen strong{font-weight:700}
+.geschlossen a{color:#fff;border-bottom:1px solid rgba(255,255,255,.5);text-decoration:none;
+  font-weight:700;white-space:nowrap}
+.geschlossen a:hover{color:#fff;border-bottom-color:#fff}
+.knopf[disabled]{opacity:.5;cursor:not-allowed;pointer-events:none;box-shadow:none}
+body[data-laden="zu"] #korb-leiste{background:var(--still)}
+
+/* ---------------- Schaufenster auf der Startseite ---------------- */
+.schaufenster{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:var(--linie);margin-top:clamp(1.6rem,4vw,2.4rem);
+  border-block:1px solid var(--linie)}
+.schaufenster__kachel{position:relative;display:block;text-decoration:none;color:inherit;
+  background:var(--grund);overflow:hidden}
+.schaufenster__bild{display:block;aspect-ratio:1;overflow:hidden;background:var(--tief)}
+.schaufenster__bild img{width:100%;height:100%;object-fit:cover;
+  transition:transform 1.1s cubic-bezier(.22,1,.36,1)}
+.schaufenster__kachel:hover .schaufenster__bild img{transform:scale(1.05)}
+.schaufenster__fuss{display:flex;align-items:baseline;justify-content:space-between;
+  gap:1rem;padding:1.1rem clamp(1rem,2vw,1.5rem) 1.3rem}
+.schaufenster__name{font-family:var(--serif);font-size:clamp(1rem,1.5vw,1.15rem);
+  font-weight:700;color:var(--gruen)}
+.schaufenster__preis{font-size:.72rem;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--leise);white-space:nowrap}
+.schaufenster__kachel::after{content:"";position:absolute;inset:0;
+  box-shadow:inset 0 0 0 0 var(--gold);transition:box-shadow .3s;pointer-events:none}
+.schaufenster__kachel:hover::after{box-shadow:inset 0 0 0 2px var(--gold)}
+@media (max-width:900px){ .schaufenster{grid-template-columns:repeat(2,1fr)} }
+@media (max-width:520px){
+  .schaufenster__fuss{flex-direction:column;gap:.15rem;padding:.8rem .9rem 1rem}
+  .schaufenster__name{font-size:.98rem}
+}
+
+/* Öffnungszeiten: alle Tage gleich kräftig, heute nur markiert */
+.zeiten--kraeftig li{color:var(--tinte);font-weight:600}
+.zeiten--kraeftig .zeiten__zeit{color:var(--still);font-weight:400}
+.zeiten--kraeftig li[data-heute="ja"]{color:var(--gruen)}
+.zeiten--kraeftig li[data-heute="ja"] .zeiten__zeit{color:var(--gruen);font-weight:600}
+.zeiten__heute{display:none;margin-left:.6rem;font-size:.6rem;font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;color:#fff;background:var(--gold);
+  padding:.16em .5em;border-radius:2px;vertical-align:.12em}
+.zeiten li[data-heute="ja"] .zeiten__heute{display:inline-block}
+.fuss .zeiten--kraeftig li{color:rgba(250,247,240,.92)}
+.fuss .zeiten--kraeftig li[data-heute="ja"],
+.fuss .zeiten--kraeftig li[data-heute="ja"] .zeiten__zeit{color:var(--gold-hell)}
+.fuss__mittag{margin:1.1rem 0 0;font-size:.88rem;color:var(--gold-hell);
+  border-top:1px solid rgba(255,255,255,.14);padding-top:1rem}
+/* picture verhaelt sich wie das img darin */
+.gericht__bild picture,.best-artikel__bild picture,.schaufenster__bild picture,
+.konfig__bild picture,.foto picture{display:block;width:100%;height:100%}
+.gericht__bild img,.best-artikel__bild img,.schaufenster__bild img,
+.konfig__bild img{width:100%;height:100%;object-fit:cover}
