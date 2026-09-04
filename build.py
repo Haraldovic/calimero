@@ -50,8 +50,15 @@ PDF      = "speisekarte-calimero-2026.pdf"
 # --- Betreiber, uebernommen aus dem bisherigen Impressum -------------
 INHABER   = "Adem Yesiltas"
 STEUERNR  = "2288402446"
-EMAIL     = None          # <-- muss noch geliefert werden, siehe README
+EMAIL     = "hu.calimero@gmail.com"
 STAND     = "September 2026"
+
+# --- Zeitungsausschnitt Hanauer Anzeiger, 14. Dezember 2004 -----------
+# Auf True lassen, sobald die Abdruckgenehmigung der Redaktion vorliegt.
+# Auf False setzen, dann erscheint der Abschnitt ohne Abbildung, der Text
+# ueber den Bericht bleibt.
+ZEITUNG_ZEIGEN = True
+ZEITUNG_QUELLE = "Hanauer Anzeiger, 14. Dezember 2004"
 MAPS     = "https://www.google.com/maps?q=Heumarkt+6,+63450+Hanau&amp;output=embed"
 MAPS_LINK= "https://www.google.com/maps/search/?api=1&amp;query=Heumarkt+6%2C+63450+Hanau"
 
@@ -60,24 +67,12 @@ MAPS_LINK= "https://www.google.com/maps/search/?api=1&amp;query=Heumarkt+6%2C+63
 # Wert hier von None auf den Dateinamen setzen. Abschnitte ohne Foto werden
 # gar nicht erst ausgegeben, die Seite sieht also nie unfertig aus.
 FOTOS = {
-    "teller":   None,   # z. B. "teller.jpg"  - rundes Bild in der Bühne, quadratisch
-    "laden":    None,   # z. B. "laden.jpg"   - Aussenansicht oder Gastraum
-    "stadt":    None,   # z. B. "hanau.jpg"   - Hanau, Innenstadt oder Marktplatz
-    "ofen":     None,   # z. B. "ofen.jpg"    - Ofen, Teig, Kueche
-    "pizza63":  None,   # z. B. "pizza63.jpg" - die Hauspizza Nr. 63
-    "pasta":    None,   # z. B. "pasta.jpg"
-    "salat":    None,   # z. B. "salat.jpg"
-    "team":     None,   # z. B. "team.jpg"
+    "teller":   None,   # rundes Bild in der Bühne der Startseite, quadratisch
+    "laden":    None,   # Außenansicht oder Gastraum, quer, erscheint auf „Über uns“
 }
 FOTO_TEXTE = {
-    "teller":  "Frisch aus dem Ofen",
-    "laden":   "Heumarkt 6, mitten in der Hanauer Innenstadt",
-    "stadt":   "Hanau, unsere Stadt seit über zwanzig Jahren",
-    "ofen":    "Jeden Abend in Betrieb",
-    "pizza63": "Nr. 63, die Pizza Calimero",
-    "pasta":   "Frische Pasta aus der Küche",
-    "salat":   "Salate in zwei Größen",
-    "team":    "Das Team der Pizzeria Calimero",
+    "teller": "Frisch aus dem Ofen",
+    "laden":  "Heumarkt 6, mitten in der Hanauer Innenstadt",
 }
 
 
@@ -92,9 +87,6 @@ def foto(schluessel, klasse="foto--breit", mit_text=True):
             f'<img src="assets/img/fotos/{datei}" alt="{text}" loading="lazy">'
             f'{unterschrift}</figure>')
 
-
-def hat_fotos(*schluessel):
-    return any(FOTOS.get(k) for k in schluessel)
 
 
 def bild_tag(datei, alt, sizes, klasse="", eager=False):
@@ -114,10 +106,12 @@ def bild_tag(datei, alt, sizes, klasse="", eager=False):
 
 
 def preis_von(nr):
+    """Name und kleinster Preis. Das Sternchen der gefuellten Tortellini
+    gehoert nur in die Karte, wo die Fussnote dazu steht."""
     for liste in (SALATE, PASTA, PIZZA):
         for g in liste:
             if g[0] == nr:
-                return g[1], g[4]
+                return g[1].replace("*", ""), g[4]
     return "", ""
 
 
@@ -148,13 +142,13 @@ def laufband():
     """Laufendes Band mit den Argumenten, die den Laden ausmachen.
     Kein Produktkatalog, sondern die Punkte, die eine Bestellung ausloesen."""
     punkte = [
-        "Seit über 20 Jahren am Heumarkt",
         "In ganz Hanau frei Haus",
         "Mittagstisch für 7,50&nbsp;€",
-        "Ohne Lieferdienst, ohne Aufschlag",
+        "Kein Lieferdienst, keine Provision",
         "Abholen oder liefern lassen",
-        "Vor Ort mit EC-Karte zahlen",
-        "Dienstag bis Sonntag geöffnet",
+        "Vor Ort mit EC-Karte",
+        "Montag Ruhetag",
+        "Heumarkt 6, Hanauer Innenstadt",
     ]
     satz = "".join(f'<span>{p}</span><em>&#9670;</em>' for p in punkte)
     return (f'<div class="laufband" aria-hidden="true"><div class="laufband__spur">'
@@ -487,8 +481,8 @@ def seite_speisekarte():
 <section class="abschnitt" style="padding-bottom:1.5rem">
   <div class="huelle">
     <h1>Speisekarte</h1>
-    <p style="font-size:1.1rem">Gültig ab Mai 2026. Alle Preise in Euro,
-    inklusive Mehrwertsteuer.</p>
+    <p class="gross">Gültig seit Mai 2026. Alle Preise in Euro und inklusive
+    Mehrwertsteuer.</p>
     <p style="display:flex;flex-wrap:wrap;gap:.7rem">
       <a class="knopf knopf--tel" href="bestellen.html">Online bestellen</a>
       <a class="knopf knopf--rand" href="{PDF}" target="_blank" rel="noopener">
@@ -543,9 +537,11 @@ def seite_speisekarte():
       </div>
     </div>
     <div class="hinweis" style="margin-top:1.8rem">
-      <p>Sie haben eine Unverträglichkeit oder Allergie? Sagen Sie uns vor der Bestellung
-      Bescheid, wir geben Ihnen zu jedem Gericht Auskunft. Änderungen der Rezepturen und
-      Preise bleiben vorbehalten, verbindlich ist die Karte im Restaurant.</p>
+      <p>Bei einer Allergie oder Unverträglichkeit sagen Sie uns vor der Bestellung
+      Bescheid. Wir geben zu jedem Gericht Auskunft. In unserer Küche werden Zutaten
+      gemeinsam verarbeitet, Spuren anderer Allergene lassen sich nicht vollständig
+      ausschließen. Änderungen von Rezepturen und Preisen bleiben vorbehalten,
+      verbindlich ist die Karte im Laden.</p>
     </div>
   </div>
 </section>
@@ -607,8 +603,8 @@ def seite_start():
     <span class="buehne__seite" aria-hidden="true">Heumarkt 6 &middot; Hanau</span>
     <p class="marke buehne__jahre" data-reveal="0">Seit über zwanzig Jahren am Heumarkt</p>
     <h1 data-reveal="80">Pizza, Pasta<em>und Salate.</em></h1>
-    <p class="buehne__text" data-reveal="180">Aus der Hanauer Innenstadt. Zum Abholen,
-    vor Ort oder in ganz Hanau frei Haus geliefert.</p>
+    <p class="buehne__text" data-reveal="180">Zum Mitnehmen, zum Hierbleiben oder
+    frei Haus in ganz Hanau. Bestellt wird telefonisch oder online.</p>
     <div class="buehne__tasten" data-reveal="260">
       <a class="knopf knopf--dunkel" href="bestellen.html"><span>Jetzt bestellen</span></a>
       <a class="knopf knopf--linie" href="speisekarte.html"><span>Speisekarte</span></a>
@@ -638,7 +634,7 @@ def seite_start():
       <p class="mittag__preis">7,50<span>€</span></p>
       <h2>Der Mittagstisch.</h2>
       <p>Von <strong>11:30 bis 14:30 Uhr</strong> eine Pizza, ein Nudelgericht oder einen
-      Salat Ihrer Wahl in normaler Größe. Ausgenommen sind die Nummern 6, 30, 38 und 51.</p>
+      Salat in normaler Größe. Ausgenommen sind die Nummern 6, 30, 38 und 51.</p>
     </div>
   </div>
 </section>
@@ -651,8 +647,8 @@ def seite_start():
       <div data-reveal>
         <p class="marke">Lieferung</p>
         <h2>In Hanau frei Haus.</h2>
-        <p style="color:var(--still)">Innerhalb von Hanau ohne Liefergebühr,
-        ab 11,00&nbsp;€ Bestellwert.</p>
+        <p style="color:var(--still)">Ohne Liefergebühr, ab 11,00&nbsp;€ Bestellwert.
+        Wir fahren in diese Stadtteile:</p>
         <ul class="gebiete" style="margin-top:1.4rem">
         {gebiete}
         </ul>
@@ -662,8 +658,6 @@ def seite_start():
         <ul class="zeiten zeiten--kraeftig">
         {zeilen}
         </ul>
-        <p style="margin-top:1rem;color:var(--still);font-size:.95rem">
-        Mittagstisch Dienstag bis Freitag, 11:30 – 14:30 Uhr, für 7,50&nbsp;€</p>
         <p style="margin-top:1.4rem">
           <span class="status" data-status><span class="status__punkt"></span>
           <span data-status-text></span></span>
@@ -677,7 +671,9 @@ def seite_start():
   <div class="huelle">
     <div class="abschnitt__kopf" data-reveal>
       <p class="marke">Anfahrt</p>
-      <h2>{STRASSE}, {PLZ_ORT}</h2>
+      <h2>Mitten in der Innenstadt.</h2>
+      <p>{STRASSE}, {PLZ_ORT}. Wenige Schritte vom Marktplatz, Parkhäuser am
+      Forum Hanau und am Marktplatz sind zu Fuß erreichbar.</p>
     </div>
     <div class="zweiklick" data-karte="{MAPS}" data-reveal="80">
       <div class="zweiklick__hinweis">
@@ -703,76 +699,67 @@ def seite_start():
 
 # ---------------------------------------------------------------- Über uns
 def seite_ueber():
-    bild_laden = foto("laden", "foto--breit")
-    bild_stadt = foto("stadt", "foto--breit")
-    bild_team = foto("team", "foto--breit")
+    zeitungsbild = ""
+    if ZEITUNG_ZEIGEN:
+        zeitungsbild = (
+            '<figure class="zeitung" data-reveal>'
+            '<picture>'
+            '<source type="image/webp" srcset="assets/img/fotos/zeitung-2004-700.webp 700w, '
+            'assets/img/fotos/zeitung-2004-1400.webp 1400w" '
+            'sizes="(max-width:900px) 100vw, 62rem">'
+            '<img src="assets/img/fotos/zeitung-2004.jpg" width="1400" height="869" '
+            'loading="lazy" decoding="async" '
+            'alt="Zeitungsausschnitt aus dem Hanauer Anzeiger vom 14. Dezember 2004 '
+            'über die Pizzeria Calimero">'
+            '</picture>'
+            f'<figcaption>{ZEITUNG_QUELLE}</figcaption>'
+            '</figure>')
 
+    bild_laden = foto("laden", "foto--breit")
     laden_block = (f'<div style="margin:2.4rem 0">{bild_laden}</div>' if bild_laden else "")
-    team_block = (f'<div style="margin:2.4rem 0 0">{bild_team}</div>' if bild_team else "")
-    stadt_block = (f'<div style="margin:0 0 2.4rem">{bild_stadt}</div>' if bild_stadt else "")
 
     body = f"""
 <section class="abschnitt">
   <div class="huelle">
-    <p class="marke">Über uns</p>
-    <h1>Seit über zwanzig Jahren<br>am Heumarkt</h1>
-    <p style="font-size:1.14rem;max-width:56ch;color:var(--still)">
-    Ein kleiner Laden mitten in der Hanauer Innenstadt, ein Ofen, der den ganzen
-    Abend läuft, und eine Karte, die sich seit Jahren kaum verändert hat. Weil sie
-    funktioniert.</p>
-
+    <p class="marke" data-reveal>Über uns</p>
+    <h1 data-reveal="60">Am Heumarkt,<br>seit über zwanzig Jahren.</h1>
+    <p class="gross" data-reveal="140">Heumarkt 6 in Hanau, Inhaber {INHABER}.
+    Seit über zwanzig Jahren dieselbe Adresse, dieselbe Telefonnummer,
+    derselbe Ruhetag.</p>
     {laden_block}
-
-    <div class="raster raster--zwei" style="margin-top:2.4rem">
-      <div class="block">
-        <h2>Was wir machen</h2>
-        <p>Pizza in zwei Größen und als Familienpizza mit vierzig Zentimetern, dazu
-        Pasta in allen Varianten, Lasagne, Gnocchi und Salate. Fünfundsiebzig
-        Gerichte stehen auf der Karte.</p>
-        <p>Bestellt wird bei uns per Telefon oder seit Neuestem online. Zum Abholen,
-        zum Hierbleiben oder zur Lieferung nach Hause, in Hanau frei Haus.</p>
-      </div>
-      <div class="block">
-        <h2>Der Vogel auf dem Schild</h2>
-        <p>Calimero ist das schwarze Küken mit der Eierschale auf dem Kopf, das seit
-        den sechziger Jahren aus italienischen Werbespots bekannt ist. Klein, frech
-        und immer ein bisschen unterschätzt.</p>
-        <p>Er steht auf unserem Schild, auf der Karte, und er hat seine eigene Pizza:
-        die <a href="speisekarte.html#nr-063">Pizza Calimero</a>.</p>
-      </div>
-    </div>
   </div>
 </section>
 
 <section class="abschnitt abschnitt--tief">
-  <div class="huelle">
-    <div class="abschnitt__kopf">
-      <p class="marke">Aus dem Archiv</p>
-      <h2>Ein Zeitungsbericht von 2004</h2>
+  <div class="huelle huelle--mitte">
+    <div class="abschnitt__kopf abschnitt__kopf--mitte" data-reveal>
+      <p class="marke">Dezember 2004</p>
+      <h2>Der Beleg hängt bei uns an der Wand.</h2>
     </div>
-    <div class="raster raster--zwei" style="align-items:start">
-      <div>
-        <p>Am 14. Dezember 2004 schaute der Hanauer Anzeiger bei uns vorbei und
-        testete den Mittagstisch. Damals brachten schwarze Smarts mit unserer
-        Telefonnummer auf der Tür das Essen durch die Innenstadt, und auf der
-        Speisekarte stand ein Versprechen: blitzschnell.</p>
-        <p>Der Tester bestellte unter anderem eine Pizza „Frühstück“, belegt mit
-        Tomaten, Käse, Schinken und zwei Spiegeleiern, damals für 5,50&nbsp;€. Knapp
-        dreißig Minuten später stand das Essen auf seinem Schreibtisch, noch heiß.</p>
-        <p>Diese Pizza gibt es immer noch. Sie steht heute als
-        <a href="speisekarte.html#nr-072">Nummer 72</a> auf der Karte, mit denselben
-        Zutaten. Und der Mittagstisch von damals läuft auch weiter, heute von
-        Dienstag bis Freitag für 7,50&nbsp;€.</p>
+
+    {zeitungsbild}
+
+    <div class="raster raster--zwei" style="align-items:start;margin-top:clamp(2rem,4vw,3rem)">
+      <div data-reveal>
+        <p>Der Hanauer Anzeiger testete damals unseren Mittagstisch. Die Bestellung kam
+        in knapp dreißig Minuten, ausgefahren mit schwarzen Smarts, auf denen unsere
+        Telefonnummer stand. Auf der Speisekarte stand ein Versprechen: blitzschnell.</p>
+        <p>Der Tester nahm unter anderem eine Pizza „Frühstück“, belegt mit Tomaten,
+        Käse, Schinken und zwei Spiegeleiern. Sie kostete 5,50&nbsp;€.</p>
+        <p>Diese Pizza steht bis heute unverändert auf der Karte, mit denselben
+        Zutaten. Deshalb hängt der Ausschnitt noch immer bei uns.</p>
       </div>
-      <div class="block">
-        <h2>Was sich nicht geändert hat</h2>
-        <ul style="margin:0;padding-left:1.1rem;color:var(--still)">
-          <li>Derselbe Standort: Heumarkt 6</li>
+      <div class="block" data-reveal="120">
+        <h2>Was seit damals gleich geblieben ist</h2>
+        <ul class="liste-haken">
+          <li>Heumarkt 6, dasselbe Ladenlokal</li>
           <li>Dieselbe Telefonnummer</li>
-          <li>Der Mittagstisch, Dienstag bis Freitag</li>
-          <li>Die Pizza „Frühstück“ von damals</li>
+          <li>Der Mittagstisch von Dienstag bis Freitag</li>
+          <li>Die Pizza „Frühstück“ mit zwei Spiegeleiern</li>
           <li>Montag ist Ruhetag</li>
         </ul>
+        <p style="margin-top:1.4rem">
+        <a class="knopf knopf--linie" href="speisekarte.html"><span>Zur Speisekarte</span></a></p>
       </div>
     </div>
   </div>
@@ -780,34 +767,29 @@ def seite_ueber():
 
 <section class="abschnitt">
   <div class="huelle">
-    {stadt_block}
-    <div class="abschnitt__kopf">
-      <h2>Gut zu wissen</h2>
-    </div>
     <div class="raster raster--drei">
-      <div class="block">
+      <div class="block" data-reveal>
+        <h2>Abholen oder liefern lassen</h2>
+        <p>In Hanau liefern wir ohne Liefergebühr, ab 11,00&nbsp;€ Bestellwert.
+        Wer abholt, kommt zum Heumarkt 6.</p>
+      </div>
+      <div class="block" data-reveal="80">
         <h2>Zahlung</h2>
-        <p>Vor Ort können Sie mit EC-Karte zahlen. Lieferungen werden bar an der
-        Haustür bezahlt.</p>
+        <p>Vor Ort mit EC-Karte oder bar. Lieferungen werden bar an der Haustür
+        bezahlt.</p>
       </div>
-      <div class="block">
-        <h2>Mittagsangebot</h2>
-        <p>Dienstag bis Freitag, 11:30 bis 14:30 Uhr: Pizza, Nudeln oder Salat in
-        normaler Größe für 7,50&nbsp;€. Ausgenommen Nr. 6, 30, 38 und 51.</p>
-      </div>
-      <div class="block">
+      <div class="block" data-reveal="160">
         <h2>Größere Bestellungen</h2>
-        <p>Büro, Baustelle, Geburtstag? Rufen Sie kurz vorher an, dann steht alles
-        pünktlich bereit. <a href="tel:{TEL_ROH}">{TEL_ZEIG}</a></p>
+        <p>Für Büro, Baustelle oder Geburtstag rufen Sie am besten vorher an:
+        <a href="tel:{TEL_ROH}">{TEL_ZEIG}</a></p>
       </div>
     </div>
-    {team_block}
   </div>
 </section>
 """
     return (kopf("Über uns | Pizzeria Calimero Hanau",
-                 "Die Pizzeria Calimero am Heumarkt in Hanau: seit über zwanzig Jahren "
-                 "Pizza, Pasta und Salate, zum Abholen, vor Ort oder als Lieferung.",
+                 "Die Pizzeria Calimero am Heumarkt 6 in Hanau: seit über zwanzig Jahren "
+                 "am selben Ort, belegt durch einen Bericht des Hanauer Anzeigers von 2004.",
                  "ueber-uns.html") + body + fuss())
 
 
@@ -823,9 +805,10 @@ def seite_kontakt():
     body = f"""
 <section class="abschnitt">
   <div class="huelle">
-    <h1>Kontakt und Bestellung</h1>
-    <p style="font-size:1.12rem;max-width:56ch">Am schnellsten geht es per Telefon.
-    Halten Sie am besten die Nummern aus der Speisekarte bereit.</p>
+    <p class="marke">Kontakt</p>
+    <h1>So erreichen<br>Sie uns.</h1>
+    <p class="gross">Rufen Sie an oder schreiben Sie uns über WhatsApp.
+    Beides landet direkt bei uns im Laden.</p>
 
     <div class="buehne__tasten" style="margin-top:1.6rem">
       <a class="knopf knopf--dunkel" href="tel:{TEL_ROH}">{ICON_TEL} {TEL_ZEIG}</a>
@@ -862,10 +845,10 @@ def seite_kontakt():
     </div>
 
     <div class="hinweis" style="margin-top:1.8rem">
-      <p><strong>Hinweis zu WhatsApp:</strong> Wenn Sie uns über WhatsApp schreiben,
-      verarbeitet WhatsApp Ireland Ltd. Ihre Daten. Details stehen in unserer
-      <a href="datenschutz.html">Datenschutzerklärung</a>. Sie erreichen uns
-      selbstverständlich auch weiterhin ganz normal per Telefon.</p>
+      <p><strong>Hinweis zu WhatsApp:</strong> Wer uns dort schreibt, dessen Daten
+      verarbeitet WhatsApp Ireland Ltd. Was das bedeutet, steht in unserer
+      <a href="datenschutz.html">Datenschutzerklärung</a>. Der Anruf bleibt die
+      Alternative, für die niemand ein Konto braucht.</p>
     </div>
   </div>
 </section>
@@ -874,8 +857,8 @@ def seite_kontakt():
   <div class="huelle" style="padding-top:clamp(3rem,7vw,5.5rem)">
     <div class="abschnitt__kopf">
       <h2>Anfahrt</h2>
-      <p>Wir liegen mitten in der Innenstadt. Parkhäuser am Forum Hanau und
-      am Marktplatz sind wenige Minuten zu Fuß entfernt.</p>
+      <p>Wenige Schritte vom Marktplatz. Parkhäuser am Forum Hanau und am
+      Marktplatz sind zu Fuß erreichbar.</p>
     </div>
     <div class="zweiklick" data-karte="{MAPS}">
       <div class="zweiklick__hinweis">
@@ -919,12 +902,9 @@ def seite_impressum():
     <h2>Steuernummer</h2>
     <p>{STEUERNR}</p>
 
-    <h2>Streitbeilegung</h2>
-    <p>Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung
-    bereit: <a href="https://ec.europa.eu/consumers/odr/" target="_blank" rel="noopener">
-    ec.europa.eu/consumers/odr</a>.</p>
+    <h2>Verbraucherstreitbeilegung</h2>
     <p>Wir sind nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor
-    einer Verbraucherschlichtungsstelle teilzunehmen.</p>
+    einer Verbraucherschlichtungsstelle teilzunehmen (§ 36 VSBG).</p>
 
     <h2>Haftung für Inhalte</h2>
     <p>Als Diensteanbieter sind wir für eigene Inhalte auf diesen Seiten nach den
@@ -961,8 +941,11 @@ def seite_impressum():
     des Betriebs.</p>
 
     <h2>Bildnachweis</h2>
-    <p>Logo und Maskottchen: Pizzeria Calimero. Alle weiteren Abbildungen sind eigene
-    Aufnahmen des Betriebs.</p>
+    <p>Logo und Maskottchen: Pizzeria Calimero. Die Aufnahmen der Speisen sind eigene
+    Fotografien des Betriebs, teilweise digital nachbearbeitet.</p>
+    <p>Der auf der Seite „Über uns“ abgebildete Zeitungsausschnitt stammt aus dem
+    <strong>Hanauer Anzeiger vom 14. Dezember 2004</strong>. Alle Rechte an Text und
+    Bild liegen beim Verlag. Die Wiedergabe erfolgt mit freundlicher Genehmigung.</p>
 
     <p style="margin-top:2.4rem;font-size:.9rem">Stand: {STAND}</p>
   </div>
@@ -1201,8 +1184,8 @@ def seite_bestellen():
 <section class="best-kopf">
   <div class="huelle">
     <h1>Online bestellen</h1>
-    <p>Gerichte auswählen, Warenkorb prüfen, fertig. Die Bestellung geht als
-    Nachricht direkt an unser Telefon, ohne Lieferdienst dazwischen.</p>
+    <p>Ihre Bestellung landet direkt bei uns im Laden. Kein Lieferdienst
+    dazwischen, keine Provision, kein Aufschlag auf den Preis.</p>
     <ul class="best-ablauf">
       <li><b>1</b> Auswählen</li>
       <li><b>2</b> Warenkorb prüfen</li>
@@ -1214,10 +1197,10 @@ def seite_bestellen():
        <span class="status__punkt"></span><span data-status-text></span></span></p>
     <p style="font-size:.94rem;color:var(--inchiostro-weich);margin-top:1rem">
     Bezahlt wird erst bei der Übergabe, bar oder mit EC-Karte im Laden.
-    Es gibt keine Onlinezahlung. Lieferung in Hanau frei Haus ab
+    Lieferung in Hanau frei Haus ab
     {('%.2f' % MINDESTBESTELLWERT).replace('.', ',')}&nbsp;€.
-    Lieber telefonisch? <a href="tel:{TEL_ROH}">{TEL_ZEIG}</a> oder
-    <a href="{PDF}" target="_blank" rel="noopener">Speisekarte als PDF</a>.</p>
+    Lieber telefonisch? <a href="tel:{TEL_ROH}">{TEL_ZEIG}</a>. Die Karte gibt es
+    auch als <a href="{PDF}" target="_blank" rel="noopener">PDF zum Ausdrucken</a>.</p>
     {warnung}
   </div>
 </section>
@@ -1305,9 +1288,12 @@ def seite_bestellbedingungen():
     kommt <strong>erst dann</strong> zustande, wenn wir Ihre Bestellung ausdrücklich
     bestätigen, in der Regel per Nachricht oder Anruf, oder wenn wir mit der Zubereitung
     beginnen. Eine automatische Eingangsbestätigung ist keine Annahme.</p>
+    <p>Bestellungen können ausschließlich innerhalb unserer Öffnungszeiten abgegeben
+    werden. Außerhalb dieser Zeiten und an unserem Ruhetag ist das Absenden nicht
+    möglich, auch nicht als Vorbestellung für einen späteren Zeitpunkt.</p>
     <p>Wir behalten uns vor, Bestellungen abzulehnen, etwa bei zu hoher Auslastung, wenn
-    einzelne Zutaten nicht verfügbar sind, kurz vor Ladenschluss oder wenn die
-    Lieferadresse außerhalb unseres Liefergebiets liegt.</p>
+    einzelne Zutaten nicht verfügbar sind oder wenn die Lieferadresse außerhalb unseres
+    Liefergebiets liegt.</p>
 
     <h2>3. Übermittlung über WhatsApp</h2>
     <p>Die zusammengestellte Bestellung wird als vorbereitete Textnachricht in WhatsApp
@@ -1365,11 +1351,9 @@ def seite_bestellbedingungen():
     <p>Sollte etwas nicht stimmen, melden Sie sich bitte umgehend telefonisch, damit wir
     es klären können. Es gelten die gesetzlichen Gewährleistungsrechte.</p>
 
-    <h2>10. Streitbeilegung</h2>
-    <p>Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung bereit:
-    <a href="https://ec.europa.eu/consumers/odr/" target="_blank" rel="noopener">
-    ec.europa.eu/consumers/odr</a>. Wir sind nicht bereit und nicht verpflichtet, an
-    Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
+    <h2>10. Verbraucherstreitbeilegung</h2>
+    <p>Wir sind nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor
+    einer Verbraucherschlichtungsstelle teilzunehmen (§ 36 VSBG).</p>
 
     <p style="margin-top:2.4rem;font-size:.9rem">Stand: {STAND}</p>
   </div>
