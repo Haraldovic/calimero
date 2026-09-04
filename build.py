@@ -67,12 +67,24 @@ MAPS_LINK= "https://www.google.com/maps/search/?api=1&amp;query=Heumarkt+6%2C+63
 # Wert hier von None auf den Dateinamen setzen. Abschnitte ohne Foto werden
 # gar nicht erst ausgegeben, die Seite sieht also nie unfertig aus.
 FOTOS = {
-    "teller":   None,   # rundes Bild in der Bühne der Startseite, quadratisch
-    "laden":    None,   # Außenansicht oder Gastraum, quer, erscheint auf „Über uns“
+    "teller":   None,   # z. B. "teller.jpg"  - rundes Bild in der Bühne, quadratisch
+    "laden":    None,   # z. B. "laden.jpg"   - Aussenansicht oder Gastraum
+    "stadt":    None,   # z. B. "hanau.jpg"   - Hanau, Innenstadt oder Marktplatz
+    "ofen":     None,   # z. B. "ofen.jpg"    - Ofen, Teig, Kueche
+    "pizza63":  None,   # z. B. "pizza63.jpg" - die Hauspizza Nr. 63
+    "pasta":    None,   # z. B. "pasta.jpg"
+    "salat":    None,   # z. B. "salat.jpg"
+    "team":     None,   # z. B. "team.jpg"
 }
 FOTO_TEXTE = {
-    "teller": "Frisch aus dem Ofen",
-    "laden":  "Heumarkt 6, mitten in der Hanauer Innenstadt",
+    "teller":  "Frisch aus dem Ofen",
+    "laden":   "Heumarkt 6, mitten in der Hanauer Innenstadt",
+    "stadt":   "Hanau, unsere Stadt seit über zwanzig Jahren",
+    "ofen":    "Jeden Abend in Betrieb",
+    "pizza63": "Nr. 63, die Pizza Calimero",
+    "pasta":   "Frische Pasta aus der Küche",
+    "salat":   "Salate in zwei Größen",
+    "team":    "Das Team der Pizzeria Calimero",
 }
 
 
@@ -87,6 +99,9 @@ def foto(schluessel, klasse="foto--breit", mit_text=True):
             f'<img src="assets/img/fotos/{datei}" alt="{text}" loading="lazy">'
             f'{unterschrift}</figure>')
 
+
+def hat_fotos(*schluessel):
+    return any(FOTOS.get(k) for k in schluessel)
 
 
 def bild_tag(datei, alt, sizes, klasse="", eager=False):
