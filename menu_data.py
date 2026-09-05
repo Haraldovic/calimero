@@ -148,7 +148,7 @@ GETRAENKE = [
     # Sinalco in zwei Groessen: 1,0-l-Flasche 4,00 / 0,33-l-Glas 3,00
     ("G01", "Sinalco Cola",       "", "1",   "4,00", "3,00"),
     ("G02", "Sinalco Cola Zero",  "", "1,8", "4,00", "3,00"),
-    ("G03", "Sinalco Orange",     "", "",    "4,00", "3,00"),
+    ("G03", "Sinalco Orange",     "", "1",   "4,00", "3,00"),
     ("G04", "Sinalco Cola Mix",   "", "1",   "4,00", "3,00"),
     # Einzelgroessen
     ("G05", "Uludağ Gazoz",       "0,5 l Flasche",  "", "2,50", None),
@@ -214,6 +214,19 @@ BILDER = {
     "073": "073-pizza-rucola.jpg",
 }
 
+# Kleine Vorschaubilder in Speisekarte und Bestellliste.
+# Auf Wunsch des Wirts aus, weil nur ein Teil der Gerichte Fotos hat und die
+# Listen dadurch unruhig wirken. Im Bestellfenster bleibt das grosse Bild.
+BILDER_IN_LISTE = False
+
 # Reihenfolge der Bilder im Schaufenster auf der Startseite.
 # Bewusst gemischt, damit nicht drei aehnliche Pizzen nebeneinander liegen.
-SCHAUFENSTER = ["073", "025", "002", "060", "019", "040"]
+SCHAUFENSTER = [
+    # Alle Gerichte mit Foto, bewusst gemischt statt nach Kategorie sortiert,
+    # damit nicht drei aehnliche Pizzen nebeneinander liegen.
+    "017", "044", "002", "073",
+    "020", "060", "004", "050",
+    "014", "055", "001", "070",
+    "025", "040", "016", "066",
+    "029", "018", "019",
+]

@@ -9,7 +9,7 @@ from menu_data import (SALATE, PASTA, PIZZA, EXTRAS, ZUSATZSTOFFE, ALLERGENE,
                        GROESSEN, EXTRA_ZUTATEN, EXTRA_PREIS, ZUSATZOPTIONEN, WEGLASSEN,
                        GETRAENKE, GETRAENKE_PLATZHALTER, MINDESTBESTELLWERT, LIEFERGEBUEHR,
                        SONDERGROESSEN, ARTIKEL_HINWEIS,
-                       BESTELL_PAUSE, MINDESTVERWEILDAUER, BILDER, ANNAHMESCHLUSS, SCHAUFENSTER)
+                       BESTELL_PAUSE, MINDESTVERWEILDAUER, BILDER, ANNAHMESCHLUSS, SCHAUFENSTER, BILDER_IN_LISTE)
 import json
 
 HIER = os.path.dirname(os.path.abspath(__file__))
@@ -67,24 +67,12 @@ MAPS_LINK= "https://www.google.com/maps/search/?api=1&amp;query=Heumarkt+6%2C+63
 # Wert hier von None auf den Dateinamen setzen. Abschnitte ohne Foto werden
 # gar nicht erst ausgegeben, die Seite sieht also nie unfertig aus.
 FOTOS = {
-    "teller":   None,   # z. B. "teller.jpg"  - rundes Bild in der Bühne, quadratisch
-    "laden":    None,   # z. B. "laden.jpg"   - Aussenansicht oder Gastraum
-    "stadt":    None,   # z. B. "hanau.jpg"   - Hanau, Innenstadt oder Marktplatz
-    "ofen":     None,   # z. B. "ofen.jpg"    - Ofen, Teig, Kueche
-    "pizza63":  None,   # z. B. "pizza63.jpg" - die Hauspizza Nr. 63
-    "pasta":    None,   # z. B. "pasta.jpg"
-    "salat":    None,   # z. B. "salat.jpg"
-    "team":     None,   # z. B. "team.jpg"
+    "teller":   None,   # rundes Bild in der Bühne der Startseite, quadratisch
+    "laden":    None,   # Außenansicht oder Gastraum, quer, erscheint auf „Über uns“
 }
 FOTO_TEXTE = {
-    "teller":  "Frisch aus dem Ofen",
-    "laden":   "Heumarkt 6, mitten in der Hanauer Innenstadt",
-    "stadt":   "Hanau, unsere Stadt seit über zwanzig Jahren",
-    "ofen":    "Jeden Abend in Betrieb",
-    "pizza63": "Nr. 63, die Pizza Calimero",
-    "pasta":   "Frische Pasta aus der Küche",
-    "salat":   "Salate in zwei Größen",
-    "team":    "Das Team der Pizzeria Calimero",
+    "teller": "Frisch aus dem Ofen",
+    "laden":  "Heumarkt 6, mitten in der Hanauer Innenstadt",
 }
 
 
@@ -99,9 +87,6 @@ def foto(schluessel, klasse="foto--breit", mit_text=True):
             f'<img src="assets/img/fotos/{datei}" alt="{text}" loading="lazy">'
             f'{unterschrift}</figure>')
 
-
-def hat_fotos(*schluessel):
-    return any(FOTOS.get(k) for k in schluessel)
 
 
 def bild_tag(datei, alt, sizes, klasse="", eager=False):
@@ -131,26 +116,30 @@ def preis_von(nr):
 
 
 def schaufenster():
-    """Grosse Bildflaeche auf der Startseite. Jede Kachel fuehrt in die
-    passende Kategorie der Bestellseite."""
+    """Alle Gerichte mit Foto auf der Startseite. Die Vorschaubilder in
+    Speisekarte und Bestellliste sind auf Wunsch des Wirts aus, deshalb ist
+    das hier der einzige Ort, an dem man die Fotos im Ueberblick sieht.
+    Jede Kachel traegt Nummer, Name und Preis und fuehrt zum Gericht."""
     kacheln = []
     for nr in SCHAUFENSTER:
         datei = BILDER.get(nr)
         if not datei:
             continue
         name, preis = preis_von(nr)
-        kat = "pizza" if nr >= "040" else ("pasta" if nr >= "012" else "salate")
         kacheln.append(
-            f'<a class="schaufenster__kachel" href="bestellen.html#{kat}">'
+            f'<a class="schaufenster__kachel" href="speisekarte.html#nr-{nr}">'
             '<span class="schaufenster__bild">'
-            + bild_tag(datei, name, "(max-width:520px) 100vw, (max-width:900px) 50vw, 33vw",
+            + bild_tag(datei, name, "(max-width:700px) 50vw, (max-width:1100px) 33vw, 25vw",
                        eager=(nr == SCHAUFENSTER[0]))
             + '</span>'
-            f'<span class="schaufenster__fuss"><span class="schaufenster__name">{name}</span>'
-            f'<span class="schaufenster__preis">ab {preis}&nbsp;€</span></span></a>')
+            '<span class="schaufenster__fuss">'
+            f'<span class="schaufenster__nr">Nr. {nr}</span>'
+            f'<span class="schaufenster__name">{name}</span>'
+            f'<span class="schaufenster__preis">ab {preis}&nbsp;€</span>'
+            '</span></a>')
     if not kacheln:
         return ""
-    return ('<div class="schaufenster">' + "".join(kacheln) + "</div>")
+    return '<div class="schaufenster">' + "".join(kacheln) + "</div>"
 
 
 def laufband():
@@ -255,7 +244,12 @@ def kopf(titel, beschreibung, pfad, extra_head="", schema="", robots=None):
     tiefe = ""
     rbt = robots or ROBOTS
     v_css = fingerabdruck("assets/css/calimero.css")
-    bodyattr = ' data-seite="bestellen"' if pfad == "bestellen.html" else ""
+    marken = []
+    if pfad == "bestellen.html":
+        marken.append('data-seite="bestellen"')
+    if pfad == "index.html":
+        marken.append('data-buehne="bild"')
+    bodyattr = (" " + " ".join(marken)) if marken else ""
     canonical = DOMAIN + "/" + pfad if pfad != "index.html" else DOMAIN + "/"
     return f"""<!DOCTYPE html>
 <!-- Pizzeria Calimero, Stil A Avorio. Build {BAUZEIT}, CSS {v_css} -->
@@ -404,7 +398,7 @@ def fuss(extra_js=""):
 def gericht_html(g, spalte=False):
     nr, name, zutaten, code, p1, p2 = g
     bild = ""
-    if BILDER.get(nr):
+    if BILDER_IN_LISTE and BILDER.get(nr):
         bild = ('  <span class="gericht__bild">'
                 + bild_tag(BILDER[nr], name, "72px") + '</span>')
     elif spalte:
@@ -613,23 +607,29 @@ def seite_start():
 
     body = f"""
 <section class="buehne">
-  <div class="buehne__glanz" aria-hidden="true"></div>
+  <picture class="buehne__hintergrund">
+    <source type="image/webp" media="(max-width:820px)"
+            srcset="assets/img/szenen/pizza-mix-16x9-m.webp">
+    <source type="image/webp" srcset="assets/img/szenen/pizza-mix-16x9.webp">
+    <img src="assets/img/szenen/pizza-mix.jpg" alt="" width="1800" height="1013"
+         fetchpriority="high" decoding="async">
+  </picture>
+  <span class="buehne__schleier" aria-hidden="true"></span>
+
   <div class="huelle buehne__innen">
-    <span class="buehne__seite" aria-hidden="true">Heumarkt 6 &middot; Hanau</span>
     <p class="marke buehne__jahre" data-reveal="0">Seit über zwanzig Jahren am Heumarkt</p>
     <h1 data-reveal="80">Pizza, Pasta<em>und Salate.</em></h1>
-    <p class="buehne__text" data-reveal="180">Zum Mitnehmen, zum Hierbleiben oder
-    frei Haus in ganz Hanau. Bestellt wird telefonisch oder online.</p>
+    <p class="buehne__text" data-reveal="180">Aus dem Ofen am Heumarkt 6.
+    Zum Mitnehmen, zum Hierbleiben oder frei Haus in ganz Hanau.</p>
     <div class="buehne__tasten" data-reveal="260">
       <a class="knopf knopf--dunkel" href="bestellen.html"><span>Jetzt bestellen</span></a>
-      <a class="knopf knopf--linie" href="speisekarte.html"><span>Speisekarte</span></a>
+      <a class="knopf knopf--hell" href="speisekarte.html"><span>Speisekarte</span></a>
     </div>
     <ul class="buehne__fakten" data-reveal="340">
       <li><span class="status" data-status><span class="status__punkt"></span>
           <span data-status-text>Öffnungszeiten siehe unten</span></span></li>
-      <li><a href="tel:{TEL_ROH}" style="text-decoration:none;color:inherit">{TEL_ZEIG}</a></li>
+      <li><a href="tel:{TEL_ROH}">{TEL_ZEIG}</a></li>
     </ul>
-    {teller}
   </div>
 </section>
 
@@ -638,11 +638,21 @@ def seite_start():
 <section class="abschnitt abschnitt--knapp">
   <div class="huelle" data-reveal>
     <p class="marke">Aus unserer Küche</p>
+    <h2>Ein Blick auf den Teller.</h2>
+    <p style="color:var(--still)">Alle Preise für die kleinere Größe.
+    Zum Gericht auf der Speisekarte geht es über das Bild.</p>
   </div>
   {schau}
 </section>
 
 <section class="mittag">
+  <picture class="mittag__bild" aria-hidden="true">
+    <source type="image/webp" media="(max-width:820px)"
+            srcset="assets/img/szenen/tortellini-16x9-m.webp">
+    <source type="image/webp" srcset="assets/img/szenen/tortellini-16x9.webp">
+    <img src="assets/img/szenen/tortellini.jpg" alt="" width="1800" height="1013"
+         loading="lazy" decoding="async">
+  </picture>
   <div class="huelle">
     <div class="mittag__block" data-reveal>
       <p class="marke" style="color:var(--gold-hell)">Dienstag bis Freitag</p>
@@ -681,6 +691,16 @@ def seite_start():
     </div>
   </div>
 </section>
+
+<figure class="bildband" data-reveal>
+  <picture>
+    <source type="image/webp" media="(max-width:820px)"
+            srcset="assets/img/szenen/ueberbacken-16x9-m.webp">
+    <source type="image/webp" srcset="assets/img/szenen/ueberbacken-16x9.webp">
+    <img src="assets/img/szenen/ueberbacken.jpg" alt="Überbackene Nudeln aus dem Ofen"
+         width="1800" height="1013" loading="lazy" decoding="async">
+  </picture>
+</figure>
 
 <section class="abschnitt abschnitt--tief">
   <div class="huelle">
@@ -737,10 +757,10 @@ def seite_ueber():
 <section class="abschnitt">
   <div class="huelle">
     <p class="marke" data-reveal>Über uns</p>
-    <h1 data-reveal="60">Am Heumarkt,<br>seit über zwanzig Jahren.</h1>
-    <p class="gross" data-reveal="140">Heumarkt 6 in Hanau, Inhaber {INHABER}.
-    Seit über zwanzig Jahren dieselbe Adresse, dieselbe Telefonnummer,
-    derselbe Ruhetag.</p>
+    <h1 data-reveal="60">Wer 2004 bei uns bestellt hat, findet heute dieselbe
+    Nummer im Telefon.</h1>
+    <p class="gross" data-reveal="140">Und dieselbe Pizza auf der Karte.
+    Am Heumarkt 6 in Hanau, geführt von {INHABER}.</p>
     {laden_block}
   </div>
 </section>
@@ -750,28 +770,30 @@ def seite_ueber():
     <div class="abschnitt__kopf abschnitt__kopf--mitte" data-reveal>
       <p class="marke">Dezember 2004</p>
       <h2>Der Beleg hängt bei uns an der Wand.</h2>
+      <p>Der Hanauer Anzeiger hat uns damals getestet. Wir haben den Ausschnitt
+      behalten, weil das meiste davon heute noch stimmt.</p>
     </div>
 
     {zeitungsbild}
 
     <div class="raster raster--zwei" style="align-items:start;margin-top:clamp(2rem,4vw,3rem)">
       <div data-reveal>
-        <p>Der Hanauer Anzeiger testete damals unseren Mittagstisch. Die Bestellung kam
-        in knapp dreißig Minuten, ausgefahren mit schwarzen Smarts, auf denen unsere
-        Telefonnummer stand. Auf der Speisekarte stand ein Versprechen: blitzschnell.</p>
-        <p>Der Tester nahm unter anderem eine Pizza „Frühstück“, belegt mit Tomaten,
-        Käse, Schinken und zwei Spiegeleiern. Sie kostete 5,50&nbsp;€.</p>
-        <p>Diese Pizza steht bis heute unverändert auf der Karte, mit denselben
-        Zutaten. Deshalb hängt der Ausschnitt noch immer bei uns.</p>
+        <p>Getestet wurde der Mittagstisch. Das Essen kam nach knapp dreißig Minuten,
+        gebracht von einem der schwarzen Smarts, die damals mit unserer Telefonnummer
+        durch die Innenstadt fuhren. Auf der Karte stand ein Versprechen: blitzschnell.
+        Der Tester hielt fest, dass wir es gehalten haben.</p>
+        <p>Bestellt hatte er eine Pizza „Frühstück“ für 5,50&nbsp;€, belegt mit
+        Tomaten, Käse, Schinken und zwei Spiegeleiern. Es gibt sie immer noch, mit
+        denselben Zutaten.</p>
+        <p>Die Smarts sind inzwischen weg. Fast alles andere ist geblieben.</p>
       </div>
       <div class="block" data-reveal="120">
-        <h2>Was seit damals gleich geblieben ist</h2>
+        <h2>Unverändert seit 2004</h2>
         <ul class="liste-haken">
-          <li>Heumarkt 6, dasselbe Ladenlokal</li>
-          <li>Dieselbe Telefonnummer</li>
+          <li>Das Ladenlokal am Heumarkt 6</li>
+          <li>Die Telefonnummer</li>
           <li>Der Mittagstisch von Dienstag bis Freitag</li>
           <li>Die Pizza „Frühstück“ mit zwei Spiegeleiern</li>
-          <li>Montag ist Ruhetag</li>
         </ul>
         <p style="margin-top:1.4rem">
         <a class="knopf knopf--linie" href="speisekarte.html"><span>Zur Speisekarte</span></a></p>
@@ -785,18 +807,18 @@ def seite_ueber():
     <div class="raster raster--drei">
       <div class="block" data-reveal>
         <h2>Abholen oder liefern lassen</h2>
-        <p>In Hanau liefern wir ohne Liefergebühr, ab 11,00&nbsp;€ Bestellwert.
-        Wer abholt, kommt zum Heumarkt 6.</p>
+        <p>In Hanau fahren wir ohne Liefergebühr, ab 11,00&nbsp;€ Bestellwert.
+        Wer selbst kommt, findet uns am Heumarkt 6.</p>
       </div>
       <div class="block" data-reveal="80">
-        <h2>Zahlung</h2>
-        <p>Vor Ort mit EC-Karte oder bar. Lieferungen werden bar an der Haustür
-        bezahlt.</p>
+        <h2>Bezahlt wird bei der Übergabe</h2>
+        <p>Im Laden mit EC-Karte oder bar, an der Haustür bar. Vorkasse gibt es
+        bei uns nicht.</p>
       </div>
       <div class="block" data-reveal="160">
-        <h2>Größere Bestellungen</h2>
-        <p>Für Büro, Baustelle oder Geburtstag rufen Sie am besten vorher an:
-        <a href="tel:{TEL_ROH}">{TEL_ZEIG}</a></p>
+        <h2>Für größere Runden</h2>
+        <p>Büro, Baustelle, Geburtstag: Ein Anruf vorher, und alles steht
+        pünktlich bereit. <a href="tel:{TEL_ROH}">{TEL_ZEIG}</a></p>
       </div>
     </div>
   </div>
@@ -1146,9 +1168,9 @@ def preis(t):
 
 def menu_json():
     kategorien = [
-        {"id": "pizza",      "name": "Pizza",     "groessen": GROESSEN["pizza"],  "extras": True},
-        {"id": "pasta",      "name": "Pasta",     "groessen": GROESSEN["pasta"],  "extras": True},
         {"id": "salate",     "name": "Salate",    "groessen": GROESSEN["salate"], "extras": True},
+        {"id": "pasta",      "name": "Pasta",     "groessen": GROESSEN["pasta"],  "extras": True},
+        {"id": "pizza",      "name": "Pizza",     "groessen": GROESSEN["pizza"],  "extras": True},
     ]
     if not GETRAENKE_PLATZHALTER:
         kategorien.append({"id": "getraenke", "name": "Getränke",
@@ -1178,6 +1200,7 @@ def menu_json():
             artikel.append(eintrag)
 
     daten = {
+        "bilderInListe": BILDER_IN_LISTE,
         "kategorien": kategorien,
         "artikel": artikel,
         "extras": {"liste": EXTRA_ZUTATEN, "preise": EXTRA_PREIS},
@@ -1199,14 +1222,9 @@ def seite_bestellen():
 <section class="best-kopf">
   <div class="huelle">
     <h1>Online bestellen</h1>
-    <p>Ihre Bestellung landet direkt bei uns im Laden. Kein Lieferdienst
-    dazwischen, keine Provision, kein Aufschlag auf den Preis.</p>
-    <ul class="best-ablauf">
-      <li><b>1</b> Auswählen</li>
-      <li><b>2</b> Warenkorb prüfen</li>
-      <li><b>3</b> Per WhatsApp absenden</li>
-      <li><b>4</b> Wir bestätigen die Zeit</li>
-    </ul>
+    <p class="gross">Bequem über WhatsApp bestellen. Ihre Bestellung landet
+    direkt bei uns im Laden, ohne Lieferdienst dazwischen und ohne Provision.</p>
+
     <p style="margin-top:1.2rem"><span class="status" data-status
        style="background:#fff;border-color:var(--riga);color:var(--inchiostro)">
        <span class="status__punkt"></span><span data-status-text></span></span></p>

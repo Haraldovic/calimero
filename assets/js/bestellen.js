@@ -7,7 +7,8 @@
   "use strict";
 
   var K = {};                 // Menuedaten aus menu.json
-  var korb = [];              // Warenkorb
+  var korb = [];
+  var bilderInListe = false;              // Warenkorb
   var SPEICHER = "calimero-warenkorb";
   var entwurf = null;         // gerade konfigurierter Artikel
 
@@ -149,7 +150,7 @@
       var preise = Object.keys(a.preise).map(function (g) { return a.preise[g]; });
       var ab = Math.min.apply(null, preise);
       var mehrere = preise.length > 1;
-      var bild = a.bild ? '<span class="best-artikel__bild">' +
+      var bild = (a.bild && bilderInListe) ? '<span class="best-artikel__bild">' +
         bildTag(a.bild, a.name, "66px") + "</span>" : "";
       return '<button type="button" class="best-artikel" data-id="' + a.id + '">' +
         bild +
@@ -744,6 +745,7 @@
 
   /* ---------------------------------------------------- Start */
   function start(daten) {
+    bilderInListe = !!daten.bilderInListe;
     K = daten;
     korbLaden();
     tabsZeichnen();
